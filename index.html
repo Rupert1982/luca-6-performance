@@ -298,6 +298,31 @@
 
 
   .player-profile{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.profile-chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);padding:10px;border-radius:12px}.profile-chip b{display:block;font-size:.75rem;text-transform:uppercase;opacity:.7;margin-bottom:3px}.exercise-links{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.video-link{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:999px;background:#e62117;color:#fff!important;text-decoration:none;font-size:.82rem;font-weight:700}.load-warning{margin:10px 0;padding:10px 12px;border-left:4px solid #ffb020;background:rgba(255,176,32,.10);border-radius:8px;font-size:.88rem}.day-goal{font-weight:700;margin:8px 0 4px}.coach-rule{font-size:.86rem;padding:10px;border-radius:10px;background:rgba(61,214,140,.10);border:1px solid rgba(61,214,140,.25)}@media(max-width:520px){.player-profile{grid-template-columns:1fr}}
+
+  /* ---- Version 2.0: Gym & 6er-Scout ---- */
+  .pro-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
+  .pro-card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+  .pro-card h4{font-family:'Oswald',sans-serif;margin:0 0 6px;font-size:18px}
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .tag{font-size:12px;padding:4px 8px;border-radius:999px;background:var(--bg-elev-2);border:1px solid var(--border);color:var(--chalk-dim)}
+  .exercise-card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:10px 0}
+  .exercise-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .exercise-title{font-family:'Oswald',sans-serif;font-size:20px}
+  .exercise-meta{color:var(--chalk-dim);font-size:13px;margin:5px 0}
+  .set-row{display:grid;grid-template-columns:1fr 110px 100px;gap:8px;margin-top:10px;align-items:end}
+  .set-row label{font-size:12px;color:var(--muted)}
+  .set-row input{width:100%}
+  .primary-btn{background:var(--pitch-light);border:1px solid var(--pitch-light);color:#fff;border-radius:8px;padding:9px 12px;font-weight:700}
+  .ghost-btn{background:transparent;border:1px solid var(--border);color:var(--chalk);border-radius:8px;padding:9px 12px}
+  .scout-meter{margin:12px 0}
+  .scout-head{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:5px}
+  .meter{height:9px;border-radius:99px;background:#08162d;overflow:hidden;border:1px solid var(--border)}
+  .meter > span{display:block;height:100%;background:var(--pitch-light);border-radius:99px}
+  .session-banner{border:1px solid var(--pitch-light);background:linear-gradient(135deg,rgba(62,116,199,.20),rgba(18,42,84,.9));border-radius:var(--radius);padding:16px;margin-bottom:14px}
+  .session-banner .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:11px;color:var(--chalk-dim)}
+  .session-banner h3{font-size:26px;margin-top:3px}
+  @media(max-width:620px){.pro-grid{grid-template-columns:1fr}.set-row{grid-template-columns:1fr 1fr}.set-row .wide{grid-column:1/-1}}
+
 </style>
 </head>
 <body>
@@ -320,6 +345,8 @@
     <button data-section="plan">Trainingsplan</button>
     <button data-section="termine">Termine</button>
     <button data-section="tracking">Tracking</button>
+    <button data-section="gym">Gym</button>
+    <button data-section="scout">6er-Scout</button>
     <button data-section="ernaehrung">Ernährung</button>
     <button data-section="fuerte">10-Tage-Block</button>
   </div>
@@ -328,6 +355,8 @@
   <div id="sectionPlan" style="display:none;"></div>
   <div id="sectionTermine" style="display:none;"></div>
   <div id="sectionTracking" style="display:none;"></div>
+  <div id="sectionGym" style="display:none;"></div>
+  <div id="sectionScout" style="display:none;"></div>
   <div id="sectionErnaehrung" style="display:none;"></div>
   <div id="sectionFuerte" style="display:none;"></div>
 
@@ -1118,6 +1147,77 @@
     target.appendChild(listCard);
   }
 
+  var GYM_LIBRARY = [
+    {id:"split", name:"Bulgarian Split Squat", focus:"Einbeinkraft · Stabilität · Zweikampf", dose:"3 × 6–8 je Seite", rest:"90–120 s", cue:"Vorderer Fuß fest, Knie stabil, kontrolliert absenken und kräftig hoch.", q:"E3 Rehab Bulgarian split squat technique"},
+    {id:"nordic", name:"Nordic Hamstring", focus:"Hamstrings · Sprintschutz", dose:"3 × 4–6", rest:"120 s", cue:"Körper als Linie halten und die Abwärtsbewegung maximal kontrollieren.", q:"E3 Rehab Nordic hamstring curl technique"},
+    {id:"copenhagen", name:"Copenhagen Plank", focus:"Adduktoren · Richtungswechsel", dose:"3 × 20–30 s je Seite", rest:"60 s", cue:"Hüfte hochhalten, Becken nicht nach hinten drehen.", q:"E3 Rehab Copenhagen plank technique"},
+    {id:"trap", name:"Trap-Bar Deadlift", focus:"Ganzkörperkraft · Antritt", dose:"4 × 4–6", rest:"150 s", cue:"Rumpf fest, Boden wegdrücken, keine Maximalversuche im Urlaub.", q:"trap bar deadlift technique athletes"},
+    {id:"hip", name:"Hip Thrust", focus:"Gesäßkraft · Beschleunigung", dose:"3 × 6–8", rest:"90 s", cue:"Rippen unten, oben kurz Spannung halten, nicht ins Hohlkreuz.", q:"hip thrust technique athletes"},
+    {id:"calf", name:"Soleus-Wadenheben", focus:"Bremsen · Fußgelenk · Laufökonomie", dose:"3 × 10–12", rest:"60 s", cue:"Knie gebeugt halten und über den gesamten Bewegungsweg arbeiten.", q:"bent knee soleus calf raise technique"},
+    {id:"pull", name:"Klimmzug / Latzug", focus:"Oberkörper · Robustheit", dose:"3 × 6–10", rest:"90 s", cue:"Schulterblätter zuerst setzen, ohne Schwung ziehen.", q:"pull up proper form tutorial"},
+    {id:"pallof", name:"Pallof Press", focus:"Core · Zweikampf · Passstabilität", dose:"3 × 8–10 je Seite", rest:"45–60 s", cue:"Becken und Brustbein bleiben gerade, Kabel kontrolliert führen.", q:"Pallof press technique E3 Rehab"}
+  ];
+
+  function ensurePerformanceState(){
+    if(!state.performance) state.performance = {};
+    if(!state.performance.gym) state.performance.gym = {};
+    if(!state.performance.scout) state.performance.scout = {scan:3, pass:4, duel:4, speed:3, recovery:4};
+  }
+
+  function renderGym(){
+    ensurePerformanceState();
+    var target=id("sectionGym"); target.innerHTML="";
+    var intro=document.createElement("div"); intro.className="session-banner";
+    intro.innerHTML='<div class="eyebrow">Athletik für den defensiven Spielmacher</div><h3>Gym · Qualität vor Gewicht</h3><p class="muted">Die Einheiten unterstützen Antritt, Zweikampfstabilität und Verletzungsprophylaxe. Für Luca als 2009er Jungjahrgang gilt: saubere Technik, keine erzwungenen Maximalgewichte und bei Schmerzen sofort stoppen.</p>';
+    target.appendChild(intro);
+    GYM_LIBRARY.forEach(function(ex){
+      var saved=state.performance.gym[ex.id]||{};
+      var card=document.createElement("div"); card.className="exercise-card";
+      card.innerHTML='<div class="exercise-top"><div><div class="exercise-title">'+esc(ex.name)+'</div><div class="exercise-meta">'+esc(ex.focus)+' · Vorgabe: '+esc(ex.dose)+' · Pause '+esc(ex.rest)+'</div></div><a class="video-link" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/results?search_query='+encodeURIComponent(ex.q)+'">▶ Technik</a></div><p>'+esc(ex.cue)+'</p>';
+      var row=document.createElement("div"); row.className="set-row";
+      row.innerHTML='<div class="wide"><label>Notiz / Ausführung</label><input type="text" data-f="note" placeholder="z. B. sauber, leicht, schwer" value="'+esc(saved.note||'')+'"></div><div><label>Gewicht kg</label><input type="number" inputmode="decimal" data-f="weight" value="'+esc(saved.weight||'')+'"></div><div><label>RPE 1–10</label><input type="number" min="1" max="10" data-f="rpe" value="'+esc(saved.rpe||'')+'"></div>';
+      row.querySelectorAll('input').forEach(function(inp){inp.addEventListener('change',function(){if(!state.performance.gym[ex.id]) state.performance.gym[ex.id]={}; state.performance.gym[ex.id][inp.getAttribute('data-f')]=inp.value; saveState();});});
+      card.appendChild(row); target.appendChild(card);
+    });
+  }
+
+  var SCOUT_ITEMS = [
+    {id:"scan",label:"Scanning vor Ballannahme",desc:"Vororientierung, Schulterblick und offene Stellung."},
+    {id:"pass",label:"Passqualität unter Druck",desc:"Scharfe flache Pässe, richtiger Fuß und passende Entscheidung."},
+    {id:"duel",label:"Zweikampf & Absicherung",desc:"Körperposition, Timing und Raum hinter dem Ball schützen."},
+    {id:"speed",label:"Antritt & wiederholte Sprints",desc:"Erste 5–10 Meter und erneute Aktionen nach kurzer Pause."},
+    {id:"recovery",label:"Regeneration & Verfügbarkeit",desc:"Schlaf, Energie, Muskelgefühl und konstante Trainingsfähigkeit."}
+  ];
+
+  function scoutSummary(vals){
+    var total=0; SCOUT_ITEMS.forEach(function(x){total+=Number(vals[x.id]||0)});
+    var avg=total/SCOUT_ITEMS.length;
+    if(avg>=4.5) return "Sehr stabil – jetzt Qualität unter höherem Tempo bestätigen.";
+    if(avg>=3.5) return "Gute Basis – ein klarer Entwicklungsfokus pro Woche reicht.";
+    return "Grundlage aufbauen – Technik und Belastbarkeit vor maximaler Intensität.";
+  }
+
+  function renderScout(){
+    ensurePerformanceState();
+    var target=id("sectionScout"); target.innerHTML="";
+    var vals=state.performance.scout;
+    var intro=document.createElement("div"); intro.className="session-banner";
+    intro.innerHTML='<div class="eyebrow">Positionsprofil · Nummer 6</div><h3>Bundesliga-orientierter 6er-Scout</h3><p class="muted">Keine erfundene Profi-Norm, sondern Lucas persönliches Entwicklungsprofil. Nach Training oder Spiel bewertet ihr gemeinsam fünf Merkmale von 1 bis 5.</p><div class="coach-rule"><b>Coach-Auswertung:</b> '+esc(scoutSummary(vals))+'</div>';
+    target.appendChild(intro);
+    SCOUT_ITEMS.forEach(function(item){
+      var val=Math.max(1,Math.min(5,Number(vals[item.id]||3)));
+      var card=document.createElement("div"); card.className="pro-card";
+      card.innerHTML='<div class="scout-head"><div><b>'+esc(item.label)+'</b><div class="muted">'+esc(item.desc)+'</div></div><span class="mono">'+val+'/5</span></div><div class="meter"><span style="width:'+(val*20)+'%"></span></div>';
+      var select=document.createElement("select");
+      [1,2,3,4,5].forEach(function(n){var o=document.createElement("option");o.value=n;o.textContent=n+" / 5";if(n===val)o.selected=true;select.appendChild(o)});
+      select.addEventListener("change",function(){vals[item.id]=Number(select.value);saveState();renderScout();});
+      card.appendChild(select); target.appendChild(card);
+    });
+    var focus=document.createElement("div"); focus.className="card";
+    focus.innerHTML='<h3>Wochenauftrag für Luca</h3><div class="pro-grid"><div class="pro-card"><h4>Mit Ball</h4><p>Vor jeder Ballannahme mindestens einen klaren Schulterblick. Bei Passformen bewusst offen zum Spielfeld stehen.</p></div><div class="pro-card"><h4>Gegen den Ball</h4><p>Ersten Schritt nach Ballverlust sofort nach vorne oder in den Passweg – nicht stehen bleiben.</p></div><div class="pro-card"><h4>Athletik</h4><p>Kurze Antritte mit voller Qualität. Abbrechen, sobald Zeiten oder Technik deutlich schlechter werden.</p></div><div class="pro-card"><h4>Spielintelligenz</h4><p>Nach jeder Einheit eine Szene notieren: gute Entscheidung, Alternative und nächster Lernpunkt.</p></div></div>';
+    target.appendChild(focus);
+  }
+
   function renderAll(){
     if(!state.sohn){ state = defaultState(); }
     normalizePlan(state.sohn);
@@ -1127,6 +1227,8 @@
     renderPlan();
     renderTermine();
     renderTracking();
+    renderGym();
+    renderScout();
     renderErnaehrung();
     renderFuerte();
   }
@@ -1142,6 +1244,8 @@
         id("sectionPlan").style.display = currentSection === "plan" ? "" : "none";
         id("sectionTermine").style.display = currentSection === "termine" ? "" : "none";
         id("sectionTracking").style.display = currentSection === "tracking" ? "" : "none";
+        id("sectionGym").style.display = currentSection === "gym" ? "" : "none";
+        id("sectionScout").style.display = currentSection === "scout" ? "" : "none";
         id("sectionErnaehrung").style.display = currentSection === "ernaehrung" ? "" : "none";
         id("sectionFuerte").style.display = currentSection === "fuerte" ? "" : "none";
       });
@@ -1157,7 +1261,7 @@
 
 })();
 </script>
-<div style="text-align:center;opacity:.55;font-size:.75rem;padding:18px">Luca 6 – Performance · Fuerteventura Edition 1.0</div>
+<div style="text-align:center;opacity:.55;font-size:.75rem;padding:18px">Luca 6 – Performance · Fuerteventura Edition 2.0 · Gym & 6er-Scout</div>
 
 <script>
 if ("serviceWorker" in navigator) {
