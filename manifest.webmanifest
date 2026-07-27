@@ -1,0 +1,25 @@
+{
+  "name": "Luca 6 – Performance",
+  "short_name": "Luca 6",
+  "description": "Trainings- und Performance-App für Luca als defensiven Mittelfeldspieler.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B1E3D",
+  "theme_color": "#0B1E3D",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
