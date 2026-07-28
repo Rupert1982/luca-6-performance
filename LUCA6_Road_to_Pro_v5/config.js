@@ -1,4 +1,0 @@
-window.LUCA6_CONFIG = {
-  STRAVA_CLIENT_ID: "268349",
-  STRAVA_BACKEND_URL: ""
-};
