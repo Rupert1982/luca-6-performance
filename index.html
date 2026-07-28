@@ -1,1310 +1,155 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>LUCA6 – Mission Bundesliga</title>
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LUCA6">
-<meta name="theme-color" content="#0B1E3D">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #0B1E3D;
-    --bg-elev: #122A54;
-    --bg-elev-2: #183765;
-    --pitch: #1D4E9B;
-    --pitch-light: #3E74C7;
-    --chalk: #F5F7FA;
-    --chalk-dim: #C3CCDA;
-    --muted: #7A8AA5;
-    --amber: #F5F7FA;
-    --amber-dim: #5A6B87;
-    --red: #C0483B;
-    --border: #24365C;
-    --radius: 10px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background: var(--bg);
-    color: var(--chalk);
-    font-family: 'Inter', system-ui, sans-serif;
-    line-height: 1.5;
-    min-height: 100vh;
-    padding-bottom: 4rem;
-  }
-  h1,h2,h3{
-    font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    margin: 0;
-  }
-  .mono{ font-family: 'JetBrains Mono', monospace; }
-  a{ color: var(--amber); }
-  button{
-    font-family: 'Inter', sans-serif;
-    cursor: pointer;
-  }
-  input, select, textarea{
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    color: var(--chalk);
-    border-radius: 6px;
-    padding: 0.5rem 0.6rem;
-    font-size: 14px;
-  }
-  input:focus, select:focus, textarea:focus, button:focus-visible{
-    outline: 2px solid var(--amber);
-    outline-offset: 1px;
-  }
-  ::placeholder{ color: var(--muted); }
-
-  .wrap{ max-width: 760px; margin: 0 auto; padding: 1.5rem 1.25rem 0; }
-
-  /* ---- Kopfbereich / Profilwahl ---- */
-  .topbar{
-    display:flex; align-items:center; justify-content: space-between;
-    margin-bottom: 1.5rem;
-  }
-  .brand{ display:flex; align-items:center; gap:0.6rem; }
-  .brand .dot{ width:10px; height:10px; border-radius:50%; background: var(--amber); }
-  .brand .logo{ width:34px; height:34px; border-radius:6px; display:block; }
-  .brand span{ font-family:'Oswald', sans-serif; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--chalk-dim); }
-
-  .profiles{ display:flex; gap:0.5rem; margin-bottom: 1.5rem; }
-  .profile-tab{
-    flex:1;
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.9rem 1rem;
-    text-align: left;
-    color: var(--chalk-dim);
-    transition: none;
-  }
-  .profile-tab .num{
-    font-family:'JetBrains Mono', monospace;
-    font-size: 22px; font-weight:700;
-    color: var(--muted);
-    display:block;
-    margin-bottom: 2px;
-  }
-  .profile-tab .name{ font-family:'Oswald', sans-serif; font-size: 16px; color: var(--chalk-dim); }
-  .profile-tab.active{
-    border-color: var(--pitch-light);
-    background: var(--bg-elev-2);
-  }
-  .profile-tab.active .num{ color: var(--amber); }
-  .profile-tab.active .name{ color: var(--chalk); }
-
-  /* ---- Anstoss-Uhr / Countdown ---- */
-  .scoreboard{
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem 1.1rem;
-    display:flex; align-items:center; justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.75rem;
-    flex-wrap: wrap;
-  }
-  .scoreboard .label{ font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 4px; }
-  .scoreboard .count{ font-family:'JetBrains Mono', monospace; font-size: 30px; font-weight:700; color: var(--amber); }
-  .scoreboard .count small{ font-size: 14px; color: var(--chalk-dim); font-weight: 500; margin-left: 6px; }
-  .scoreboard .set-date{ display:flex; align-items:center; gap:0.5rem; }
-  .scoreboard input[type=date]{ font-size: 13px; padding: 0.4rem 0.5rem; }
-
-  /* ---- Sektionen / Tabs ---- */
-  .section-nav{
-    display:flex; gap: 1.5rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 1.5rem;
-  }
-  .section-nav button{
-    background:none; border:none; color: var(--muted);
-    font-family:'Oswald', sans-serif; font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase;
-    padding: 0 0 0.7rem;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-  }
-  .section-nav button.active{
-    color: var(--chalk);
-    border-bottom-color: var(--amber);
-  }
-
-  .card{
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.1rem 1.2rem;
-    margin-bottom: 1rem;
-  }
-  .card h3{ font-size: 16px; margin-bottom: 0.75rem; color: var(--chalk); }
-  .muted{ color: var(--muted); font-size: 13px; }
-
-  /* ---- Trainingsplan ---- */
-  .day-block{ margin-bottom: 0.9rem; }
-  .day-title{
-    font-family:'Oswald', sans-serif; font-size: 13px; text-transform: uppercase;
-    letter-spacing: 0.06em; color: var(--pitch-light); margin-bottom: 0.4rem;
-  }
-  .exercise-row{
-    display:flex; align-items:center; gap: 0.6rem;
-    padding: 0.4rem 0; border-bottom: 1px solid var(--border);
-  }
-  .exercise-row:last-child{ border-bottom: none; }
-  .exercise-row input[type=checkbox]{
-    width: 18px; height: 18px; accent-color: var(--pitch-light); flex-shrink:0;
-  }
-  .exercise-row .ex-text{ flex:1; font-size: 14px; }
-  .exercise-row.done .ex-text{ color: var(--muted); text-decoration: line-through; }
-  .exercise-row button.del{
-    background:none; border:none; color: var(--muted); font-size: 16px; line-height:1; padding: 2px 4px;
-  }
-  .exercise-row button.del:hover{ color: var(--red); }
-  .add-ex{ display:flex; gap: 0.5rem; margin-top: 0.5rem; }
-  .add-ex input{ flex:1; }
-  .btn{
-    background: var(--bg-elev-2); border: 1px solid var(--pitch-light);
-    color: var(--chalk); border-radius: 6px; padding: 0.5rem 0.9rem; font-size: 13px;
-  }
-  .btn:hover{ background: var(--pitch); }
-  .btn.small{ padding: 0.35rem 0.6rem; font-size: 12px; }
-  .btn.subtle{ background:none; border-color: var(--border); color: var(--muted); }
-
-  /* ---- Tracking ---- */
-  .stat-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap: 0.7rem; margin-bottom: 1rem; }
-  .stat{
-    background: var(--bg-elev-2); border-radius: var(--radius); padding: 0.8rem;
-    text-align:center;
-  }
-  .stat .val{ font-family:'JetBrains Mono', monospace; font-size: 22px; font-weight:700; color: var(--amber); }
-  .stat .lbl{ font-size: 11px; text-transform:uppercase; letter-spacing:0.05em; color: var(--muted); margin-top:2px; }
-
-  .log-form{ display:grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.5rem; }
-  .log-form .full{ grid-column: 1 / -1; }
-  .log-form label{ font-size: 12px; color: var(--muted); display:block; margin-bottom: 3px; }
-  input[type=range]{ width:100%; accent-color: var(--amber); }
-
-  .log-entry{
-    display:flex; align-items:flex-start; justify-content: space-between; gap: 0.75rem;
-    padding: 0.6rem 0; border-bottom: 1px solid var(--border);
-  }
-  .log-entry:last-child{ border-bottom:none; }
-  .log-entry .le-main{ font-size: 14px; }
-  .log-entry .le-date{ color: var(--muted); font-size: 12px; margin-right: 0.5rem; }
-  .log-entry .le-note{ color: var(--chalk-dim); font-size: 13px; margin-top: 2px; }
-  .log-entry button.del{ background:none; border:none; color: var(--muted); font-size: 15px; }
-  .log-entry button.del:hover{ color: var(--red); }
-
-  /* ---- Ernaehrung ---- */
-  .nutri-block{ margin-bottom: 0.9rem; }
-  .nutri-block .when{
-    font-family:'Oswald', sans-serif; font-size: 13px; color: var(--amber);
-    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;
-  }
-  .nutri-block ul{ margin: 0; padding-left: 1.1rem; font-size: 14px; color: var(--chalk-dim); }
-  .nutri-block li{ margin-bottom: 0.25rem; }
-
-  .empty{ color: var(--muted); font-size: 13px; padding: 0.5rem 0; }
-
-  /* ---- 10-Tage-Block ---- */
-  .fuerte-day.is-done{ border-color: var(--pitch-light); }
-  .fd-head{ display:flex; align-items:baseline; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.6rem; }
-  .fd-num{ font-size:13px; font-weight:700; color: var(--pitch-light); }
-  .fd-title{ font-family:'Oswald', sans-serif; font-size:16px; color: var(--chalk); }
-  .fd-focus{ font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color: var(--muted); border:1px solid var(--border); border-radius:20px; padding:2px 8px; }
-  .fd-list{ margin:0 0 0.6rem; padding-left:1.1rem; font-size:14px; color: var(--chalk-dim); }
-  .fd-list li{ margin-bottom:0.3rem; line-height:1.45; }
-  .fd-note{ font-size:13px; color: var(--pitch-light); border-left:2px solid var(--pitch-light); padding-left:0.6rem; margin-bottom:0.7rem; }
-  .fd-ctrls{ display:flex; align-items:flex-end; gap:0.8rem; flex-wrap:wrap; border-top:1px solid var(--border); padding-top:0.7rem; }
-  .fd-done{ display:flex; align-items:center; gap:0.4rem; font-size:13px; color: var(--chalk-dim); }
-  .fd-done input{ width:18px; height:18px; accent-color: var(--pitch-light); }
-  .fd-field{ display:flex; flex-direction:column; gap:2px; }
-  .fd-field label{ font-size:11px; color: var(--muted); }
-  .fd-field input{ width:170px; }
-  .fd-field.rpe input{ width:70px; }
-
-  /* ---- Scoreboard: nächstes Spiel ---- */
-  .next-match{ text-align:right; }
-  .nm-title{ font-family:'Oswald', sans-serif; font-size:15px; color: var(--chalk); }
-  .nm-meta{ font-size:12px; }
-
-  /* ---- Termine ---- */
-  .term-tools{ display:flex; flex-direction:column; gap:0.8rem; }
-  .wd-row{ display:flex; flex-wrap:wrap; gap:0.4rem; }
-  .wd-chip{ display:flex; align-items:center; gap:0.35rem; font-size:13px; color: var(--chalk-dim); border:1px solid var(--border); border-radius:20px; padding:3px 10px; cursor:pointer; }
-  .wd-chip input{ width:15px; height:15px; accent-color: var(--pitch-light); }
-  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
-  .form-grid .full{ grid-column:1/-1; }
-  .form-grid label{ font-size:12px; color: var(--muted); display:block; margin-bottom:3px; }
-  .status{ font-size:12px; color: var(--pitch-light); min-height:14px; margin-top:0.3rem; }
-  .month-head{ font-family:'Oswald', sans-serif; font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color: var(--pitch-light); margin:1rem 0 0.3rem; }
-  .ev-row{ display:flex; align-items:flex-start; gap:0.6rem; padding:0.55rem 0; border-bottom:1px solid var(--border); }
-  .ev-row:last-child{ border-bottom:none; }
-  .ev-date{ font-family:'JetBrains Mono', monospace; font-size:12px; color: var(--chalk-dim); white-space:nowrap; min-width:84px; }
-  .ev-body{ flex:1; }
-  .ev-title{ font-size:14px; color: var(--chalk); }
-  .ev-sub{ font-size:12px; color: var(--muted); margin-top:1px; }
-  .ev-badge{ font-size:10px; text-transform:uppercase; letter-spacing:0.04em; border-radius:20px; padding:2px 8px; white-space:nowrap; }
-  .b-spiel{ background: var(--pitch-light); color:#0B1E3D; }
-  .b-test{ background: var(--bg-elev-2); color: var(--chalk-dim); border:1px solid var(--pitch-light); }
-  .b-training{ border:1px solid var(--border); color: var(--muted); }
-  .b-individuell{ border:1px solid var(--border); color: var(--chalk-dim); }
-  .ev-row button.del{ background:none; border:none; color: var(--muted); font-size:15px; }
-  .ev-row button.del:hover{ color: var(--red); }
-
-  @media (max-width: 480px){
-    .log-form{ grid-template-columns: 1fr; }
-    .form-grid{ grid-template-columns: 1fr; }
-    .stat-grid{ grid-template-columns: repeat(3,1fr); }
-    .scoreboard{ flex-direction: column; align-items: flex-start; }
-    .next-match{ text-align:left; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{ transition: none !important; animation: none !important; }
-  }
-
-  /* ---- Dashboard / Coach-Erweiterung ---- */
-  .dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1rem}
-  .dash-card{background:var(--bg-elev-2);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem}
-  .dash-card .kicker{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-  .dash-card .big{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--amber);margin-top:3px}
-  .dash-card .small{font-size:12px;color:var(--chalk-dim);margin-top:3px}
-  .coach-box{border-left:3px solid var(--pitch-light);background:linear-gradient(90deg,rgba(52,168,83,.09),transparent)}
-  .coach-title{font-family:'Oswald',sans-serif;font-size:18px;margin-bottom:.35rem}
-  .readiness-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
-  .readiness-grid label{font-size:12px;color:var(--muted);display:block;margin-bottom:3px}
-  .readiness-grid select,.readiness-grid input{width:100%}
-  .chart-wrap{height:210px;position:relative;margin-top:.8rem}
-  .chart-wrap canvas{width:100%;height:100%;display:block}
-  .progress-bar{height:9px;background:var(--bg);border-radius:10px;overflow:hidden;margin-top:.45rem}
-  .progress-bar span{display:block;height:100%;background:var(--pitch-light);border-radius:10px}
-  .achievement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
-  .achievement{padding:.7rem;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px}
-  .achievement.unlocked{border-color:var(--amber);color:var(--chalk);background:rgba(255,183,3,.06)}
-  .tools-row{display:flex;gap:.5rem;flex-wrap:wrap}
-  .warning{color:#ffcc80;font-size:12px}
-  @media(max-width:700px){.dashboard-grid{grid-template-columns:repeat(2,1fr)}.readiness-grid{grid-template-columns:1fr 1fr}.achievement-grid{grid-template-columns:1fr}.section-nav{overflow-x:auto;gap:1rem;padding-bottom:2px}.section-nav button{white-space:nowrap}}
-
-
-  .player-profile{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.profile-chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);padding:10px;border-radius:12px}.profile-chip b{display:block;font-size:.75rem;text-transform:uppercase;opacity:.7;margin-bottom:3px}.exercise-links{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.video-link{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:999px;background:#e62117;color:#fff!important;text-decoration:none;font-size:.82rem;font-weight:700}.load-warning{margin:10px 0;padding:10px 12px;border-left:4px solid #ffb020;background:rgba(255,176,32,.10);border-radius:8px;font-size:.88rem}.day-goal{font-weight:700;margin:8px 0 4px}.coach-rule{font-size:.86rem;padding:10px;border-radius:10px;background:rgba(61,214,140,.10);border:1px solid rgba(61,214,140,.25)}@media(max-width:520px){.player-profile{grid-template-columns:1fr}}
-
-  /* ---- Version 2.0: Gym & 6er-Scout ---- */
-  .pro-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
-  .pro-card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
-  .pro-card h4{font-family:'Oswald',sans-serif;margin:0 0 6px;font-size:18px}
-  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-  .tag{font-size:12px;padding:4px 8px;border-radius:999px;background:var(--bg-elev-2);border:1px solid var(--border);color:var(--chalk-dim)}
-  .exercise-card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:10px 0}
-  .exercise-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-  .exercise-title{font-family:'Oswald',sans-serif;font-size:20px}
-  .exercise-meta{color:var(--chalk-dim);font-size:13px;margin:5px 0}
-  .set-row{display:grid;grid-template-columns:1fr 110px 100px;gap:8px;margin-top:10px;align-items:end}
-  .set-row label{font-size:12px;color:var(--muted)}
-  .set-row input{width:100%}
-  .primary-btn{background:var(--pitch-light);border:1px solid var(--pitch-light);color:#fff;border-radius:8px;padding:9px 12px;font-weight:700}
-  .ghost-btn{background:transparent;border:1px solid var(--border);color:var(--chalk);border-radius:8px;padding:9px 12px}
-  .scout-meter{margin:12px 0}
-  .scout-head{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:5px}
-  .meter{height:9px;border-radius:99px;background:#08162d;overflow:hidden;border:1px solid var(--border)}
-  .meter > span{display:block;height:100%;background:var(--pitch-light);border-radius:99px}
-  .session-banner{border:1px solid var(--pitch-light);background:linear-gradient(135deg,rgba(62,116,199,.20),rgba(18,42,84,.9));border-radius:var(--radius);padding:16px;margin-bottom:14px}
-  .session-banner .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:11px;color:var(--chalk-dim)}
-  .session-banner h3{font-size:26px;margin-top:3px}
-  @media(max-width:620px){.pro-grid{grid-template-columns:1fr}.set-row{grid-template-columns:1fr 1fr}.set-row .wide{grid-column:1/-1}}
-
-
-  /* ===== LUCA6 · Mission Bundesliga · Redesign 3.0 ===== */
-  :root{
-    --bg:#07111f;--bg-elev:#0d1c2f;--bg-elev-2:#132943;--pitch:#17b26a;
-    --pitch-light:#42d392;--chalk:#f6f8fb;--chalk-dim:#c5cfdb;--muted:#8291a6;
-    --amber:#f6c453;--border:rgba(255,255,255,.10);--radius:18px;
-  }
-  body{background:
-    radial-gradient(circle at 85% -10%,rgba(23,178,106,.22),transparent 34%),
-    radial-gradient(circle at -10% 25%,rgba(36,99,235,.17),transparent 32%),var(--bg);
-    padding-bottom:96px}
-  .wrap{max-width:920px;padding:calc(1.1rem + env(safe-area-inset-top)) 1rem 0}
-  .topbar{margin-bottom:1rem}.brand .logo{width:42px;height:42px;border-radius:13px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
-  .brand span{font-size:18px;color:#fff;letter-spacing:.12em}.brand span::after{content:'MISSION BUNDESLIGA';display:block;font:600 9px/1.3 Inter,sans-serif;color:var(--pitch-light);letter-spacing:.16em;margin-top:2px}
-  .profiles{display:none}
-  .mission-hero{position:relative;overflow:hidden;border:1px solid rgba(66,211,146,.35);border-radius:24px;padding:22px 20px;margin-bottom:16px;background:linear-gradient(135deg,rgba(23,178,106,.22),rgba(13,28,47,.96) 55%,rgba(36,99,235,.20));box-shadow:0 18px 50px rgba(0,0,0,.28)}
-  .mission-hero:after{content:'6';position:absolute;right:12px;top:-35px;font:700 150px/1 Oswald,sans-serif;color:rgba(255,255,255,.055)}
-  .mission-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pitch-light);font-weight:800}
-  .mission-hero h1{font-size:clamp(30px,8vw,52px);line-height:1;margin:7px 0 9px}.mission-hero p{margin:0;color:var(--chalk-dim);max-width:600px;font-size:14px}
-  .mission-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.mission-tags span{font-size:11px;font-weight:700;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--border)}
-  .scoreboard{border-radius:18px;background:rgba(13,28,47,.82);backdrop-filter:blur(12px);box-shadow:0 12px 35px rgba(0,0,0,.20)}
-  .section-nav{position:sticky;top:0;z-index:20;background:rgba(7,17,31,.88);backdrop-filter:blur(16px);margin:0 -1rem 1.2rem;padding:10px 1rem 5px;overflow-x:auto;gap:8px;border:0;scrollbar-width:none}
-  .section-nav::-webkit-scrollbar{display:none}.section-nav button{padding:9px 12px;margin:0;border:1px solid transparent;border-radius:999px;font-family:Inter,sans-serif;font-size:12px;font-weight:750;letter-spacing:0;text-transform:none;white-space:nowrap}
-  .section-nav button.active{background:var(--pitch);border-color:var(--pitch-light);color:white;box-shadow:0 8px 20px rgba(23,178,106,.25)}
-  .card,.pro-card,.exercise-card,.dash-card{background:linear-gradient(145deg,rgba(19,41,67,.90),rgba(13,28,47,.90));border-color:var(--border);box-shadow:0 12px 32px rgba(0,0,0,.18)}
-  .dashboard-grid{grid-template-columns:repeat(4,1fr)}.dash-card{border-radius:18px;min-height:105px}.dash-card .big{color:#fff;font-size:22px}.dash-card .kicker{color:var(--pitch-light);font-weight:800}
-  .coach-box{border-left:0;border:1px solid rgba(66,211,146,.35);background:linear-gradient(135deg,rgba(23,178,106,.18),rgba(13,28,47,.9))}.coach-title{font-size:23px}
-  .btn,.primary-btn{background:var(--pitch);border-color:var(--pitch-light);border-radius:12px;font-weight:750;padding:.65rem 1rem}.btn:hover,.primary-btn:hover{background:#13985b}.btn.subtle,.ghost-btn{background:rgba(255,255,255,.04);border-color:var(--border);color:var(--chalk-dim)}
-  input,select,textarea{border-radius:11px;background:#091728;padding:.65rem .7rem}
-  .session-banner{border-radius:22px;background:linear-gradient(135deg,rgba(23,178,106,.20),rgba(13,28,47,.95));border-color:rgba(66,211,146,.35)}
-  .session-banner h3{font-size:30px}.video-link{background:#ff0033;box-shadow:0 7px 18px rgba(255,0,51,.20)}
-  .progress-bar,.meter{background:#06101d}.progress-bar span,.meter>span{background:linear-gradient(90deg,var(--pitch),var(--pitch-light))}
-  .achievement.unlocked{border-color:rgba(246,196,83,.55);background:rgba(246,196,83,.08)}
-  .app-version{text-align:center;opacity:.5;font-size:.72rem;padding:18px}
-  @media(max-width:700px){.dashboard-grid{grid-template-columns:repeat(2,1fr)}.mission-hero{padding:19px 17px}.section-nav{position:sticky}.scoreboard{padding:.9rem}.card{padding:1rem}.exercise-top{flex-direction:column}.video-link{align-self:flex-start}}
-
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#04152d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LUCA6" />
+  <meta name="description" content="LUCA6 – Road to Pro: persönliche Fußball-Performance-App." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>LUCA6 – Road to Pro</title>
 </head>
 <body>
-<div class="wrap">
+  <div class="app-shell">
+    <header class="hero">
+      <img class="hero-photo" src="assets/luca-hero.png" alt="Luca im Trikot der TSG Sprockhövel" />
+      <div class="hero-overlay"></div>
+      <div class="hero-top">
+        <div class="logo"><strong>LUCA<span>6</span></strong><small>ROAD TO PRO</small></div>
+        <button id="installBtn" class="icon-btn hidden" aria-label="App installieren">⬇</button>
+      </div>
+      <div class="hero-copy">
+        <p>TRAIN SMARTER. PLAY BETTER.</p>
+        <h1>Willkommen zurück, Luca.</h1>
+        <span>Defensives Mittelfeld · TSG Sprockhövel U19</span>
+      </div>
+    </header>
 
-  <div class="topbar">
-    <div class="brand"><img class="logo" src="data:image/png;base64,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" alt="TSG Sprockhövel"><span>Luca 6 – Performance</span></div>
+    <main>
+      <section class="match-card panel">
+        <div>
+          <p class="eyebrow">NÄCHSTES SPIEL</p>
+          <h2 id="matchOpponent">Noch nicht eingetragen</h2>
+          <p id="matchMeta" class="muted">Datum, Uhrzeit und Gegner im Kalender ergänzen.</p>
+        </div>
+        <div class="countdown"><strong id="countdownDays">–</strong><span>TAGE</span></div>
+      </section>
+
+      <nav class="quick-nav" aria-label="Hauptnavigation">
+        <button class="nav-btn active" data-view="dashboard"><span>⌂</span>Heute</button>
+        <button class="nav-btn" data-view="training"><span>⚡</span>Training</button>
+        <button class="nav-btn" data-view="calendar"><span>▦</span>Kalender</button>
+        <button class="nav-btn" data-view="tracking"><span>▥</span>Tracking</button>
+        <button class="nav-btn" data-view="profile"><span>◉</span>Profil</button>
+      </nav>
+
+      <section id="dashboard" class="view active">
+        <div class="metric-grid">
+          <article class="panel metric readiness-panel">
+            <p class="eyebrow">BELASTUNGSSTATUS</p>
+            <div class="gauge"><i id="gaugeNeedle"></i></div>
+            <strong id="loadStatus">Niedrig</strong>
+            <span id="loadDetail">Sehr gut – weiter so!</span>
+          </article>
+          <article class="panel metric score-panel">
+            <p class="eyebrow">ROAD TO PRO SCORE</p>
+            <div class="score-ring"><strong id="proScore">74</strong><span>/100</span></div>
+            <b id="scoreTrend">+0 diese Woche</b>
+          </article>
+          <article class="panel metric coach-panel">
+            <p class="eyebrow">KI-COACH</p>
+            <div class="bot">🤖</div>
+            <strong id="coachFocus">Explosivität</strong>
+            <button class="primary small" data-view-jump="coach">Coach öffnen</button>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel mission-panel">
+            <div class="section-title"><div><p class="eyebrow">HEUTIGE MISSION</p><h2 id="missionTitle">Acceleration Day</h2></div><span id="sessionBadge" class="badge green">EMPFOHLEN</span></div>
+            <p id="missionText" class="muted"></p>
+            <ul id="sessionPlan" class="mission-list"></ul>
+            <button class="primary wide" data-view-jump="training">Mission starten</button>
+          </article>
+
+          <article class="panel strava-panel">
+            <div class="section-title"><div><p class="eyebrow orange">STRAVA</p><h2>Aktivitäten</h2></div><span class="strava-mark">▲</span></div>
+            <div class="strava-stats"><div><strong id="stravaDistance">0,0</strong><span>km diese Woche</span></div><div><strong id="stravaPace">–</strong><span>Ø Pace</span></div></div>
+            <button id="stravaConnect" class="strava-btn">Mit Strava verbinden</button>
+            <p id="stravaStatus" class="muted compact">Noch nicht verbunden.</p>
+          </article>
+
+          <article class="panel week-panel">
+            <p class="eyebrow">WOCHENPLAN</p>
+            <div id="weekPlan" class="week-list"></div>
+            <button class="secondary wide" data-view-jump="calendar">Plan ansehen</button>
+          </article>
+        </div>
+
+        <article class="panel checkin-panel">
+          <div class="section-title"><div><p class="eyebrow">TAGESFORM</p><h2>Wie fühlst du dich heute?</h2></div><strong id="readinessValue">82</strong></div>
+          <form id="checkinForm" class="checkin-grid">
+            <label>Schlaf<input id="sleep" type="number" min="0" max="12" step="0.5" value="8"><span>Stunden</span></label>
+            <label>Beine<input id="soreness" type="range" min="0" max="10" value="3"><output id="sorenessOut">3</output></label>
+            <label>Motivation<input id="motivation" type="range" min="0" max="10" value="8"><output id="motivationOut">8</output></label>
+            <label>Schmerz<input id="pain" type="range" min="0" max="10" value="0"><output id="painOut">0</output></label>
+            <button class="primary" type="submit">Coach aktualisieren</button>
+          </form>
+        </article>
+      </section>
+
+      <section id="coach" class="view">
+        <article class="panel coach-detail">
+          <p class="eyebrow">KI-COACH 1.0</p>
+          <h2 id="coachHeadline">Heute ist ein Qualitätstag.</h2>
+          <p id="coachMessage"></p>
+          <div class="coach-facts"><div><span>Fokus</span><strong id="coachFocusDetail">Explosivität</strong></div><div><span>Intensität</span><strong id="coachIntensity">Hoch</strong></div><div><span>Dauer</span><strong id="coachDuration">45–55 min</strong></div></div>
+        </article>
+        <article class="panel notice"><strong>Gesundheitshinweis:</strong> Bei Schmerzen, Schwindel oder anhaltender Erschöpfung Training abbrechen und sportmedizinisch abklären.</article>
+      </section>
+
+      <section id="training" class="view">
+        <article class="panel">
+          <p class="eyebrow">TRAININGSLOG</p><h2>Einheit speichern</h2>
+          <form id="trainingForm" class="form-grid">
+            <label>Art<select id="trainingType"><option>Sprint</option><option>Kraft</option><option>Mannschaftstraining</option><option>Spiel</option><option>Lauf</option><option>Mobility</option><option>Regeneration</option></select></label>
+            <label>Dauer<input id="duration" type="number" min="1" max="300" value="60"><span>Minuten</span></label>
+            <label>Intensität<input id="rpe" type="range" min="1" max="10" value="7"><output id="rpeOut">7</output></label>
+            <label class="full">Notiz<textarea id="note" rows="3" placeholder="z. B. 6 × 20 m, Zeiten, Gefühl …"></textarea></label>
+            <button class="primary full" type="submit">Einheit speichern</button>
+          </form>
+        </article>
+        <article class="panel"><p class="eyebrow">VERLAUF</p><h2>Letzte Einheiten</h2><div id="trainingList" class="activity-list"></div></article>
+      </section>
+
+      <section id="calendar" class="view">
+        <article class="panel"><p class="eyebrow">SPIELPLAN</p><h2>Nächstes Spiel eintragen</h2>
+          <form id="matchForm" class="form-grid">
+            <label>Gegner<input id="opponent" placeholder="z. B. SG Wattenscheid"></label>
+            <label>Datum & Uhrzeit<input id="matchDate" type="datetime-local"></label>
+            <label>Ort<select id="matchVenue"><option>Auswärts</option><option>Heim</option></select></label>
+            <button class="primary" type="submit">Spiel speichern</button>
+          </form>
+        </article>
+        <article class="panel"><p class="eyebrow">WOCHE</p><h2>Trainingsplan</h2><div id="weekPlanLarge" class="week-list large"></div></article>
+      </section>
+
+      <section id="tracking" class="view">
+        <div class="metric-grid tracking-grid"><article class="panel metric"><p class="eyebrow">DIESE WOCHE</p><strong id="weekMinutes">0 min</strong><span id="weekSessions">0 Einheiten</span></article><article class="panel metric"><p class="eyebrow">TRAININGSSERIE</p><strong id="consistency">0 Tage</strong><span>in den letzten 7 Tagen</span></article></div>
+        <article class="panel"><p class="eyebrow">6ER-PROFIL</p><h2>Leistungsprofil</h2><div id="skills" class="skills"></div></article>
+      </section>
+
+      <section id="profile" class="view">
+        <article class="profile-card panel"><img src="assets/luca-hero.png" alt="Luca"><div><p class="eyebrow">SPIELERPROFIL</p><h2>Luca Hoppen</h2><p>Jahrgang 2009 · Defensives Mittelfeld</p><p>TSG Sprockhövel · U19 Westfalenliga</p></div></article>
+        <article class="panel"><p class="eyebrow">STÄRKEN</p><div class="tag-cloud"><span>Passspiel</span><span>Spielintelligenz</span><span>Ausdauer</span><span>Zweikampf</span><span>Scanning</span></div></article>
+      </section>
+    </main>
   </div>
-
-  <div class="scoreboard">
-    <div>
-      <div class="label">Bis zum nächsten Spiel</div>
-      <div class="count" id="cdValue">–</div>
-    </div>
-    <div class="next-match" id="nextMatchInfo"></div>
-  </div>
-
-  <div class="section-nav" id="sectionNav">
-    <button data-section="dashboard" class="active">⌂ Heute</button>
-    <button data-section="plan">Wochenplan</button>
-    <button data-section="termine">Kalender</button>
-    <button data-section="tracking">Tracking</button>
-    <button data-section="gym">Gym</button>
-    <button data-section="scout">6er-Scout</button>
-    <button data-section="ernaehrung">Ernährung</button>
-    <button data-section="fuerte">Fuerteventura</button>
-  </div>
-
-  <div id="sectionDashboard"></div>
-  <div id="sectionPlan" style="display:none;"></div>
-  <div id="sectionTermine" style="display:none;"></div>
-  <div id="sectionTracking" style="display:none;"></div>
-  <div id="sectionGym" style="display:none;"></div>
-  <div id="sectionScout" style="display:none;"></div>
-  <div id="sectionErnaehrung" style="display:none;"></div>
-  <div id="sectionFuerte" style="display:none;"></div>
-
-</div>
-
-<script>
-(function(){
-
-  var DAYS = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
-
-  var DEFAULT_PLANS = {
-    sohn: {
-      Montag: ["Frei / Beweglichkeit 15 Min."],
-      Dienstag: ["Vereinstraining: Technik"],
-      Mittwoch: ["Athletik: Koordination, Sprints, Rumpf"],
-      Donnerstag: ["Vereinstraining: Spielformen"],
-      Freitag: ["Lockeres Einlaufen + Ballgefühl 20 Min."],
-      Samstag: ["Spieltag – Anstoßvorbereitung"],
-      Sonntag: ["Regeneration / frei"]
-    }
-  };
-
-  var NUTRITION = [
-    { when: "2 Tage vor dem Spiel", points: [
-      "Normale, ausgewogene Ernährung mit ausreichend Kohlenhydraten (Vollkorn, Reis, Kartoffeln)",
-      "Genug trinken, vor allem Wasser – kein Nachholbedarf erst am Spieltag"
-    ]},
-    { when: "Am Vortag", points: [
-      "Kohlenhydratbetonte Mahlzeiten, dabei nichts Neues oder Schweres ausprobieren",
-      "Ausreichend schlafen, das wirkt sich stärker aus als das letzte Essen"
-    ]},
-    { when: "Am Spieltag", points: [
-      "Letzte größere Mahlzeit 3–4 Stunden vor Anpfiff, leicht verdaulich (z.B. Nudeln, Reis, wenig Fett)",
-      "1–2 Stunden vorher ggf. eine kleine Kohlenhydratquelle (Banane, Riegel)",
-      "Regelmäßig trinken, nicht erst bei Durstgefühl"
-    ]},
-    { when: "Nach dem Spiel", points: [
-      "Innerhalb der ersten Stunde Kohlenhydrate und etwas Eiweiß (z.B. Brot mit Belag, Joghurt mit Obst)",
-      "Flüssigkeits- und Salzverluste ausgleichen"
-    ]}
-  ];
-
-  var state = null;
-  var currentProfile = "sohn";
-  var currentSection = "dashboard";
-  var STORAGE_KEY = "ft-app-state-v1";
-
-  function defaultState(){
-    return {
-      sohn: { label: "Luca", role: "U19 · Westf.-Liga", plan: JSON.parse(JSON.stringify(DEFAULT_PLANS.sohn)), log: [], matchday: "", readiness: [], metrics: [] },
-      fuerte: { done: {}, log: {} },
-      events: []
-    };
-  }
-
-  async function loadState(){
-    try{
-      if(window.storage && typeof window.storage.get === "function"){
-        var res = await window.storage.get(STORAGE_KEY, false);
-        if(res && res.value) return migrateState(JSON.parse(res.value));
-      }
-    }catch(e){}
-    try{
-      var local = localStorage.getItem(STORAGE_KEY);
-      if(local) return migrateState(JSON.parse(local));
-    }catch(e){}
-    return defaultState();
-  }
-
-  async function saveState(){
-    var payload = JSON.stringify(state);
-    try{ localStorage.setItem(STORAGE_KEY, payload); }catch(e){ console.error("Lokales Speichern fehlgeschlagen", e); }
-    try{
-      if(window.storage && typeof window.storage.set === "function") await window.storage.set(STORAGE_KEY, payload, false);
-    }catch(e){}
-  }
-
-  function migrateState(s){
-    if(!s || !s.sohn) return defaultState();
-    if(!Array.isArray(s.sohn.log)) s.sohn.log = [];
-    if(!Array.isArray(s.sohn.readiness)) s.sohn.readiness = [];
-    if(!Array.isArray(s.sohn.metrics)) s.sohn.metrics = [];
-    if(!Array.isArray(s.events)) s.events = [];
-    if(!s.fuerte) s.fuerte = {done:{},log:{}};
-    return s;
-  }
-
-  function id(x){ return document.getElementById(x); }
-
-  function fmtCountdown(dateStr){
-    if(!dateStr) return { text: "–", sub: "Datum eintragen" };
-    var target = new Date(dateStr + "T00:00:00");
-    var now = new Date();
-    now.setHours(0,0,0,0);
-    var diffMs = target - now;
-    var diffDays = Math.round(diffMs / (1000*60*60*24));
-    if(diffDays > 1) return { text: String(diffDays), sub: "Tage" };
-    if(diffDays === 1) return { text: "1", sub: "Tag" };
-    if(diffDays === 0) return { text: "Heute", sub: "Anstoß!" };
-    return { text: "–", sub: "Datum liegt in der Vergangenheit" };
-  }
-
-  function renderScoreboard(){
-    var g = nextGame();
-    if(!g){
-      id("cdValue").innerHTML = "–";
-      id("nextMatchInfo").innerHTML = '<span class="muted">Noch kein Spiel im Kalender</span>';
-      return;
-    }
-    var cd = fmtCountdown(g.date);
-    id("cdValue").innerHTML = cd.text + (cd.sub ? ' <small>' + cd.sub + '</small>' : '');
-    var ha = g.ha === "H" ? "Heim" : (g.ha === "A" ? "Auswärts" : "");
-    id("nextMatchInfo").innerHTML = '<div class="nm-title">' + esc(g.title || "Spiel") + '</div>' +
-      '<div class="nm-meta muted">' + fmtDateLong(g.date) + (g.time ? " · " + g.time + " Uhr" : "") + (ha ? " · " + ha : "") + '</div>';
-  }
-
-
-  function todayYmd(){ return new Date().toISOString().slice(0,10); }
-  function daysUntil(dateStr){
-    if(!dateStr) return null;
-    var a=new Date(); a.setHours(0,0,0,0);
-    var b=new Date(dateStr+'T00:00:00');
-    return Math.round((b-a)/86400000);
-  }
-  function completedPlanStats(){
-    var p=state[currentProfile], total=0, done=0;
-    DAYS.forEach(function(d){(p.plan[d]||[]).forEach(function(e){total++;if(e.done)done++;});});
-    return {total:total,done:done,pct:total?Math.round(done/total*100):0};
-  }
-  function trainingStreak(log){
-    if(!log.length) return 0;
-    var dates={}; log.forEach(function(e){dates[e.date]=true;});
-    var d=new Date(); d.setHours(0,0,0,0); var streak=0;
-    if(!dates[ymd(d)]) d.setDate(d.getDate()-1);
-    while(dates[ymd(d)]){streak++;d.setDate(d.getDate()-1);}
-    return streak;
-  }
-  function latestReadiness(){
-    var arr=state[currentProfile].readiness||[];
-    return arr.length?arr[0]:null;
-  }
-  function coachRecommendation(){
-    var r=latestReadiness(), g=nextGame(), du=g?daysUntil(g.date):null;
-    if(r && (r.pain>=3)) return {title:'Belastung reduzieren',text:'Schmerzen wurden angegeben. Heute keine maximalen Sprints oder schweren Beinübungen. Beschwerden beobachten und bei anhaltenden oder starken Schmerzen fachlich abklären lassen.'};
-    if(r && (r.sleep<=2 || r.energy<=2 || r.legs<=2)) return {title:'Regeneration priorisieren',text:'Die Tagesform ist reduziert. Heute 20–30 Minuten locker, Mobility und frühe Erholung statt einer harten Einheit.'};
-    if(du===0) return {title:'Spieltag',text:'Kurze Aktivierung, gute Flüssigkeitszufuhr und keine zusätzliche Ermüdung. Fokus auf Frische und Konzentration.'};
-    if(du===1) return {title:'Aktivierung statt Belastung',text:'Morgen ist Spiel. Heute nur locker bewegen, kurze explosive Reize mit langen Pausen und früh regenerieren.'};
-    if(du===2) return {title:'Qualität vor Umfang',text:'Noch zwei Tage bis zum Spiel. Kurze Technik- oder Schnelligkeitseinheit möglich, aber keine hohe Gesamtbelastung.'};
-    if(du!==null && du>=3 && du<=5) return {title:'Hauptreiz setzen',text:'Das nächste Spiel ist noch einige Tage entfernt. Heute eignet sich ein gezielter Kraft-, Sprint- oder Ausdauerreiz passend zum Wochenplan.'};
-    return {title:'Planmäßig trainieren',text:'Tagesform unauffällig. Nutze den Wochenplan und dokumentiere die Einheit anschließend im Tracking.'};
-  }
-  function renderDashboard(){
-    var p=state[currentProfile], target=id('sectionDashboard'); target.innerHTML='';
-    var ws=weekLogCount(p.log), ps=completedPlanStats(), streak=trainingStreak(p.log), g=nextGame(), r=latestReadiness(), coach=coachRecommendation();
-    var grid=document.createElement('div'); grid.className='dashboard-grid';
-    grid.innerHTML='<div class="dash-card"><div class="kicker">Diese Woche</div><div class="big">'+ws.count+' Einh.</div><div class="small">'+ws.minutes+' Minuten</div></div>'+ 
-      '<div class="dash-card"><div class="kicker">Wochenplan</div><div class="big">'+ps.pct+' %</div><div class="progress-bar"><span style="width:'+ps.pct+'%"></span></div></div>'+ 
-      '<div class="dash-card"><div class="kicker">Trainingsserie</div><div class="big">'+streak+' Tage</div><div class="small">aufeinanderfolgend</div></div>'+ 
-      '<div class="dash-card"><div class="kicker">Nächstes Spiel</div><div class="big">'+(g?(daysUntil(g.date)===0?'Heute':daysUntil(g.date)+' T.'):'–')+'</div><div class="small">'+(g?esc(g.title||'Spiel'):'Noch nicht eingetragen')+'</div></div>';
-    target.appendChild(grid);
-    var c=document.createElement('div'); c.className='card coach-box'; c.innerHTML='<div class="coach-title">Coach-Empfehlung: '+coach.title+'</div><p class="muted">'+coach.text+'</p>'; target.appendChild(c);
-    var rc=document.createElement('div'); rc.className='card'; rc.innerHTML='<h3>Tagesform eintragen</h3><p class="muted">Kurzer Check vor dem Training. 1 = schlecht, 5 = sehr gut. Schmerzen: 1 = keine, 5 = stark.</p><div class="readiness-grid"><div><label>Schlaf</label><select id="rdSleep"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div><div><label>Energie</label><select id="rdEnergy"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div><div><label>Beine</label><select id="rdLegs"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div><div><label>Schmerzen</label><select id="rdPain"><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div><button class="btn" id="saveReadiness" style="margin-top:.7rem">Tagesform speichern</button><div class="status" id="rdStatus"></div>';
-    target.appendChild(rc);
-    id('saveReadiness').addEventListener('click',function(){
-      p.readiness.unshift({date:todayYmd(),sleep:+id('rdSleep').value,energy:+id('rdEnergy').value,legs:+id('rdLegs').value,pain:+id('rdPain').value});
-      p.readiness=p.readiness.slice(0,60); saveState(); renderDashboard();
-    });
-    var ac=document.createElement('div'); ac.className='card'; ac.innerHTML='<h3>Erfolge</h3><div class="achievement-grid"><div class="achievement '+(p.log.length>=1?'unlocked':'')+'">🏁 Erste Einheit<br><span class="muted">1 Training dokumentiert</span></div><div class="achievement '+(p.log.length>=10?'unlocked':'')+'">🔥 Drangeblieben<br><span class="muted">10 Einheiten dokumentiert</span></div><div class="achievement '+(streak>=3?'unlocked':'')+'">⚡ Serie<br><span class="muted">3 Trainingstage in Folge</span></div></div>'; target.appendChild(ac);
-    var tools=document.createElement('div'); tools.className='card'; tools.innerHTML='<h3>Daten & Sicherung</h3><div class="tools-row"><button class="btn subtle" id="exportData">Daten exportieren</button><label class="btn subtle" style="cursor:pointer">Daten importieren<input id="importData" type="file" accept="application/json" style="display:none"></label><button class="btn subtle" id="resetChecks">Wochenhaken zurücksetzen</button></div><p class="warning">Die Daten bleiben auf diesem Gerät. Für mehrere Geräte ist später ein Benutzerkonto mit Datenbank nötig.</p>'; target.appendChild(tools);
-    id('exportData').addEventListener('click',function(){var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='luca-training-backup-'+todayYmd()+'.json';a.click();URL.revokeObjectURL(a.href);});
-    id('importData').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{state=migrateState(JSON.parse(rd.result));saveState();renderAll();}catch(err){alert('Die Sicherungsdatei konnte nicht gelesen werden.');}};rd.readAsText(f);});
-    id('resetChecks').addEventListener('click',function(){DAYS.forEach(function(d){(p.plan[d]||[]).forEach(function(ex){ex.done=false;});});saveState();renderAll();});
-  }
-
-  function renderPlan(){
-    var p = state[currentProfile];
-    var wrap = document.createElement("div");
-    DAYS.forEach(function(day){
-      var exList = p.plan[day] || [];
-      var block = document.createElement("div");
-      block.className = "day-block card";
-      var title = document.createElement("div");
-      title.className = "day-title";
-      title.textContent = day;
-      block.appendChild(title);
-
-      if(exList.length === 0){
-        var empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "Noch keine Übung eingetragen.";
-        block.appendChild(empty);
-      }
-
-      exList.forEach(function(ex, idx){
-        var row = document.createElement("div");
-        row.className = "exercise-row" + (ex.done ? " done" : "");
-        var cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = !!ex.done;
-        cb.addEventListener("change", function(){
-          ex.done = cb.checked;
-          saveState();
-          renderPlan();
-        });
-        var span = document.createElement("span");
-        span.className = "ex-text";
-        span.textContent = typeof ex === "string" ? ex : ex.text;
-        var delBtn = document.createElement("button");
-        delBtn.className = "del";
-        delBtn.setAttribute("aria-label", "Übung löschen");
-        delBtn.textContent = "✕";
-        delBtn.addEventListener("click", function(){
-          p.plan[day].splice(idx, 1);
-          saveState();
-          renderPlan();
-        });
-        row.appendChild(cb);
-        row.appendChild(span);
-        row.appendChild(delBtn);
-        block.appendChild(row);
-      });
-
-      var addRow = document.createElement("div");
-      addRow.className = "add-ex";
-      var input = document.createElement("input");
-      input.type = "text";
-      input.placeholder = "Übung hinzufügen …";
-      var addBtn = document.createElement("button");
-      addBtn.className = "btn small";
-      addBtn.textContent = "Hinzufügen";
-      function addExercise(){
-        var val = input.value.trim();
-        if(!val) return;
-        if(!p.plan[day]) p.plan[day] = [];
-        p.plan[day].push({ text: val, done: false });
-        input.value = "";
-        saveState();
-        renderPlan();
-      }
-      addBtn.addEventListener("click", addExercise);
-      input.addEventListener("keydown", function(e){ if(e.key === "Enter") addExercise(); });
-      addRow.appendChild(input);
-      addRow.appendChild(addBtn);
-      block.appendChild(addRow);
-
-      wrap.appendChild(block);
-    });
-
-    // Normalize old string-based exercises to objects on first render
-    var target = id("sectionPlan");
-    target.innerHTML = "";
-    target.appendChild(wrap);
-  }
-
-  function normalizePlan(p){
-    DAYS.forEach(function(day){
-      if(!p.plan[day]) p.plan[day] = [];
-      p.plan[day] = p.plan[day].map(function(ex){
-        return typeof ex === "string" ? { text: ex, done: false } : ex;
-      });
-    });
-  }
-
-  function weekLogCount(log){
-    var now = new Date();
-    var start = new Date(now);
-    var dow = (start.getDay() + 6) % 7; // Montag = 0
-    start.setDate(start.getDate() - dow);
-    start.setHours(0,0,0,0);
-    var count = 0, minutes = 0;
-    log.forEach(function(e){
-      var d = new Date(e.date + "T00:00:00");
-      if(d >= start){ count++; minutes += (e.duration || 0); }
-    });
-    return { count: count, minutes: minutes };
-  }
-
-  function renderTracking(){
-    var p = state[currentProfile];
-    var target = id("sectionTracking");
-    target.innerHTML = "";
-
-    var stats = weekLogCount(p.log);
-    var avgIntensity = p.log.length ? (p.log.reduce(function(s,e){return s+(e.intensity||0);},0) / p.log.length).toFixed(1) : "–";
-
-    var statGrid = document.createElement("div");
-    statGrid.className = "stat-grid";
-    statGrid.innerHTML =
-      '<div class="stat"><div class="val">' + stats.count + '</div><div class="lbl">Einheiten diese Woche</div></div>' +
-      '<div class="stat"><div class="val">' + stats.minutes + '</div><div class="lbl">Minuten diese Woche</div></div>' +
-      '<div class="stat"><div class="val">' + avgIntensity + '</div><div class="lbl">⌀ Intensität</div></div>';
-    target.appendChild(statGrid);
-
-    var formCard = document.createElement("div");
-    formCard.className = "card";
-    formCard.innerHTML = '<h3>Einheit eintragen</h3>';
-    var form = document.createElement("div");
-    form.className = "log-form";
-    form.innerHTML =
-      '<div><label for="logDate">Datum</label><input type="date" id="logDate"></div>' +
-      '<div><label for="logType">Art der Einheit</label><input type="text" id="logType" placeholder="z.B. Athletik, Technik, Spiel"></div>' +
-      '<div class="full"><label for="logDuration">Dauer (Minuten)</label><input type="number" id="logDuration" min="0" step="5" value="60"></div>' +
-      '<div class="full"><label for="logIntensity">Intensität (<span id="intVal">3</span>/5)</label><input type="range" id="logIntensity" min="1" max="5" step="1" value="3"></div>' +
-      '<div><label for="logWeight">Gewicht kg (optional)</label><input type="number" id="logWeight" min="30" max="180" step="0.1"></div>' +
-       '<div><label for="logSprint">30-m-Sprint s (optional)</label><input type="number" id="logSprint" min="3" max="10" step="0.01"></div>' +
-       '<div class="full"><label for="logNote">Notiz (optional)</label><input type="text" id="logNote" placeholder="z.B. Form gut, Wade etwas müde"></div>';
-    formCard.appendChild(form);
-
-    var saveBtn = document.createElement("button");
-    saveBtn.className = "btn";
-    saveBtn.style.marginTop = "0.6rem";
-    saveBtn.textContent = "Eintrag speichern";
-    formCard.appendChild(saveBtn);
-    target.appendChild(formCard);
-
-    var today = new Date().toISOString().slice(0,10);
-    id("logDate") && (id("logDate").value = today);
-
-    var intRange = id("logIntensity");
-    intRange.addEventListener("input", function(){ id("intVal").textContent = intRange.value; });
-
-    saveBtn.addEventListener("click", function(){
-      var date = id("logDate").value || today;
-      var type = id("logType").value.trim() || "Training";
-      var duration = parseInt(id("logDuration").value, 10) || 0;
-      var intensity = parseInt(id("logIntensity").value, 10) || 3;
-      var note = id("logNote").value.trim();
-      p.log.unshift({ date: date, type: type, duration: duration, intensity: intensity, note: note });
-      saveState();
-      renderTracking();
-    });
-
-    var metricEntries=p.log.filter(function(e){return e.weight||e.sprint;}).slice().reverse();
-    if(metricEntries.length){
-      var chartCard=document.createElement('div'); chartCard.className='card'; chartCard.innerHTML='<h3>Leistungsentwicklung</h3><p class="muted">Gewicht und 30-m-Sprint aus deinen Tracking-Einträgen.</p><div class="chart-wrap"><canvas id="metricChart"></canvas></div>';
-      target.appendChild(chartCard); setTimeout(function(){drawMetricChart(metricEntries);},0);
-    }
-
-    var historyCard = document.createElement("div");
-    historyCard.className = "card";
-    historyCard.innerHTML = '<h3>Verlauf</h3>';
-    if(p.log.length === 0){
-      var empty = document.createElement("div");
-      empty.className = "empty";
-      empty.textContent = "Noch keine Einträge.";
-      historyCard.appendChild(empty);
-    }else{
-      p.log.forEach(function(entry, idx){
-        var row = document.createElement("div");
-        row.className = "log-entry";
-        var main = document.createElement("div");
-        main.innerHTML = '<span class="le-main"><span class="le-date mono">' + entry.date + '</span>' + entry.type + ' · ' + entry.duration + ' Min. · Intensität ' + entry.intensity + '/5</span>' +
-          (entry.note ? '<div class="le-note">' + entry.note.replace(/</g,"&lt;") + '</div>' : '');
-        var delBtn = document.createElement("button");
-        delBtn.className = "del";
-        delBtn.setAttribute("aria-label", "Eintrag löschen");
-        delBtn.textContent = "✕";
-        delBtn.addEventListener("click", function(){
-          p.log.splice(idx, 1);
-          saveState();
-          renderTracking();
-        });
-        row.appendChild(main);
-        row.appendChild(delBtn);
-        historyCard.appendChild(row);
-      });
-    }
-    target.appendChild(historyCard);
-  }
-
-
-  function drawMetricChart(entries){
-    var c=id('metricChart'); if(!c)return; var rect=c.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
-    c.width=Math.max(320,rect.width*dpr); c.height=Math.max(180,rect.height*dpr); var x=c.getContext('2d'); x.scale(dpr,dpr);
-    var w=rect.width,h=rect.height,pad=30; x.clearRect(0,0,w,h); x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=1;
-    for(var i=0;i<4;i++){var yy=pad+(h-pad*2)*i/3;x.beginPath();x.moveTo(pad,yy);x.lineTo(w-pad,yy);x.stroke();}
-    function line(key,stroke){var vals=entries.map(function(e){return e[key];}).filter(function(v){return v;});if(vals.length<1)return;var min=Math.min.apply(null,vals),max=Math.max.apply(null,vals);if(max===min){max+=1;min-=1;}x.strokeStyle=stroke;x.lineWidth=2;x.beginPath();var started=false;entries.forEach(function(e,j){if(!e[key])return;var px=pad+(w-pad*2)*(entries.length===1 ? .5 : j/(entries.length-1));var py=h-pad-(e[key]-min)/(max-min)*(h-pad*2);if(!started){x.moveTo(px,py);started=true;}else{x.lineTo(px,py);}x.fillStyle=stroke;x.fillRect(px-2,py-2,4,4);});x.stroke();}
-    line('weight','#ffb703'); line('sprint','#4cc9f0'); x.font='11px sans-serif';x.fillStyle='#ffb703';x.fillText('Gewicht',pad,14);x.fillStyle='#4cc9f0';x.fillText('30-m-Sprint',pad+65,14);
-  }
-
-  function renderErnaehrung(){
-    var target = id("sectionErnaehrung");
-    target.innerHTML = "";
-    var card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = '<h3>Rund um den Spieltag</h3><p class="muted">Allgemeine Richtwerte – individuelle Verträglichkeit geht vor.</p>';
-    NUTRITION.forEach(function(block){
-      var b = document.createElement("div");
-      b.className = "nutri-block";
-      var when = document.createElement("div");
-      when.className = "when";
-      when.textContent = block.when;
-      var ul = document.createElement("ul");
-      block.points.forEach(function(pt){
-        var li = document.createElement("li");
-        li.textContent = pt;
-        ul.appendChild(li);
-      });
-      b.appendChild(when);
-      b.appendChild(ul);
-      card.appendChild(b);
-    });
-    target.appendChild(card);
-  }
-
-
-  var FUERTE_PLAN = [
-    { d:1, title:"Antritt & Sprintmechanik", focus:"Schnelligkeit", metric:"schnellster Antritt / Gefühl",
-      items:[
-        "15 Min Warm-up: Mobilisation Hüfte/Sprunggelenk, Anfersen, Kniehebelauf, 3 Steigerungen",
-        "Lauf-ABC: A-Skips, B-Skips – je 3×20 m",
-        "Antritte: 8×20 m aus Stand und aus Bewegung, volle Pause (zurückgehen, ~90 s)",
-        "Plyometrie: 3×5 Weitsprünge, 3×6 Pogo Jumps",
-        "Core: 3 Runden Plank 40 s · Side-Plank 30 s/Seite · Beinheben 12",
-        "5 Min locker auslaufen + Dehnen"
-      ], note:"Kurze, maximale Reize. Qualität vor Menge – bei Formverlust abbrechen." },
-    { d:2, title:"Grundlagenausdauer & Kraftbasis", focus:"Ausdauer / Kraft", metric:"Distanz + Schnitt (Strava)",
-      items:[
-        "Morgens am Strand (fester, feuchter Sand an der Uferlinie): 35–40 Min lockerer Dauerlauf im GA1 – so locker, dass du reden könntest (~5:00/km oder langsamer)",
-        "Gym-Kraft (Technik vor Gewicht, kontrollierte Lasten): Kniebeuge 4×6 · Rumänisches Kreuzheben 3×8 · Bulgarian Split Squat 3×8/Seite · Nordic Hamstring 3×5 (langsam bremsen!) · Wadenheben 3×12 · Klimmzüge oder Latzug 3×8",
-        "Core: Pallof-Press 3×12/Seite · Plank 3×40 s"
-      ], note:"Gewichte wählen, die du sauber beherrschst – bei Formverlust runter. Kein Maximalversuch." },
-    { d:3, title:"Intervalle / spielnahe Ausdauer", focus:"Ausdauer intensiv", metric:"Ø-Puls oder Gefühl der 4er",
-      items:[
-        "Warm-up 12 Min inkl. 3 Steigerungen",
-        "4×4 Min hart (ca. 90–95 %, letzte 30 s zäh) mit je 3 Min Trabpause",
-        "Alternative: 12×(30 s schnell / 30 s locker)",
-        "8 Min locker auslaufen"
-      ], note:"Die 4-Min-Blöcke sollen richtig fordern (RPE 8–9). Das ist der Motor fürs Spiel." },
-    { d:4, title:"Regeneration", focus:"Erholung", metric:"Schlaf (h) + Beingefühl",
-      items:[
-        "Lockeres Schwimmen im Meer 15–20 Min oder Strandspaziergang 30 Min",
-        "Mobility-Routine 15 Min: Hüfte, Waden, Brustwirbelsäule",
-        "Optional 10 Min lockeres Ballgefühl / Jonglieren",
-        "Heute wird regeneriert, nicht trainiert: Schlaf, Trinken, gutes Essen"
-      ], note:"Regeneration ist Teil des Trainings – nicht überspringen." },
-    { d:5, title:"Schnelligkeitsausdauer & Agilität", focus:"Schnelligkeit", metric:"Zeit 5-10-5 / Gefühl",
-      items:[
-        "Warm-up 15 Min",
-        "Agilität: 5-10-5 (Pro-Agility) 6× · T-Drill 4× – volle Pause",
-        "Schnelligkeitsausdauer: 6×70 m bei 90–95 %, 2–3 Min Pause",
-        "Core: 3 Runden"
-      ], note:"Richtungswechsel auf festem Grund oder Gym-Boden (Sprunggelenke schonen!). Schnell, aber technisch sauber." },
-    { d:6, title:"Grundlagenausdauer & Kraft (Power)", focus:"Ausdauer / Kraft", metric:"Distanz + Schnitt (Strava)",
-      items:[
-        "Morgens am Strand: 40–45 Min Dauerlauf an der Uferlinie, letzte 10 Min zügiger (progressiv)",
-        "Gym-Kraft mit Fokus Schnellkraft: Trap-Bar-Kreuzheben oder Kniebeuge 4×5 (zügig hoch, kontrolliert runter) · Hip Thrust 3×8 · Split Squat 3×8/Seite · Nordic Hamstring 3×5 · Wadenheben 3×12",
-        "Core"
-      ], note:"Etwas mehr Gewicht als Tag 2, dafür weniger Wiederholungen und explosiv aus dem Stand." },
-    { d:7, title:"Regeneration", focus:"Erholung", metric:"Schlaf (h) + Beingefühl",
-      items:[
-        "Wie Tag 4: Meer, Mobility, lockeres Ballgefühl",
-        "Selbstcheck: Beine schwer? Schlaf ok?",
-        "Falls stark müde → morgen Intensität bewusst rausnehmen"
-      ], note:"Ehrlicher Check. Müde Beine sind ein Signal, kein Feind." },
-    { d:8, title:"Wiederholungssprints & Power", focus:"Schnelligkeit / Ausdauer", metric:"Gefühl letzter Satz",
-      items:[
-        "Warm-up 15 Min",
-        "RSA: 3 Sätze à 6×25 m Sprint, je 20–25 s Pause zwischen den Sprints, 4 Min zwischen den Sätzen",
-        "Plyometrie: 3×5 Strecksprünge · 3×6 seitliche Sprünge",
-        "Core"
-      ], note:"Gegen Ende der Sätze wird's hart – genau das ist der Reiz für wiederholte Sprints im Spiel." },
-    { d:9, title:"Spielnahe Ausdauer & Ball", focus:"Ausdauer moderat", metric:"Gefühl / Kontakte",
-      items:[
-        "Warm-up",
-        "Intervalle mit Ball: 8×(45 s intensiver Dribbel-/Passparcours oder Lauf mit Ball / 60 s locker)",
-        "15 Min beidfüßiges Passspiel, erste Kontakte, Spieleröffnung (deine 6er-Themen)",
-        "Cooldown"
-      ], note:"Moderat halten – Beine für den Test morgen nicht leerlaufen." },
-    { d:10, title:"Aktivierung & Standortbestimmung", focus:"locker + Test", metric:"3-km-Zeit oder 30-m-Zeit",
-      items:[
-        "Lockeres Warm-up",
-        "Kurzer Test: entweder 3 km auf Zeit ODER 3×30 m Sprint auf Zeit (Vergleichswert für später)",
-        "Locker auslaufen + Mobility",
-        "Werte notieren – mit welchem Gefühl geht's zurück ins Mannschaftstraining?"
-      ], note:"Nur ein kurzer Testreiz. Ansonsten frisch bleiben für die Rückkehr." }
-  ];
-
-  var VIDEO_LIBRARY = [
-    {k:["Nordic"], label:"Nordic Hamstrings", q:"E3 Rehab Nordic hamstring curl technique"},
-    {k:["Bulgarian"], label:"Bulgarian Split Squat", q:"E3 Rehab Bulgarian split squat technique"},
-    {k:["Copenhagen"], label:"Copenhagen Plank", q:"E3 Rehab Copenhagen plank technique"},
-    {k:["Sprinttechnik","Acceleration","Antritt"], label:"Sprinttechnik", q:"football acceleration sprint mechanics tutorial"},
-    {k:["Plyometrie","Sprünge","Strecksprünge"], label:"Plyometrie", q:"football plyometrics landing technique"},
-    {k:["Core","Rumpf"], label:"Core Training", q:"football core stability exercises technique"},
-    {k:["Mobility","Beweglichkeit"], label:"Mobility", q:"football hip ankle mobility routine"},
-    {k:["Trap Bar"], label:"Trap-Bar Deadlift", q:"trap bar deadlift technique athletes"},
-    {k:["Passspiel","Ball","Dribbel"], label:"6er Ballarbeit", q:"defensive midfielder individual training scanning passing"}
-  ];
-
-  function videoLinksFor(items){
-    var text = items.join(" ").toLowerCase();
-    var used = {};
-    return VIDEO_LIBRARY.filter(function(v){
-      var hit = v.k.some(function(k){ return text.indexOf(k.toLowerCase()) !== -1; });
-      if(hit && !used[v.label]){ used[v.label]=true; return true; }
-      return false;
-    }).slice(0,4);
-  }
-
-  function renderFuerte(){
-    var target = id("sectionFuerte");
-    target.innerHTML = "";
-    if(!state.fuerte) state.fuerte = { done:{}, log:{} };
-
-    var intro = document.createElement("div");
-    intro.className = "card";
-    intro.innerHTML = '<h3>10-Tage-Block · Fuerteventura</h3>' +
-      '<p class="muted">Individuelle Vorbereitung für Luca: Jahrgang 2009, U19-Westfalenliga, Stammposition 6 – laufstarker, passsicherer und zweikampfstarker defensiver Spielmacher. Ziel ist ein leistungsorientierter Reiz in Richtung U19-Nachwuchsleistungszentrum, ohne in zehn Tagen unnötig zu überziehen.</p>' +
-      '<div class="player-profile">' +
-      '<div class="profile-chip"><b>Position</b>Defensiver Mittelfeldspieler · 6er</div>' +
-      '<div class="profile-chip"><b>Ausgangsniveau</b>8 km · Ø 4:09 min/km</div>' +
-      '<div class="profile-chip"><b>Stärken</b>Laufstärke · Passspiel · Zweikampf · Spielintelligenz</div>' +
-      '<div class="profile-chip"><b>Entwicklungsfokus</b>Antritt · Schnellkraft · Robustheit · wiederholte Sprints</div>' +
-      '</div>' +
-      '<div class="load-warning"><b>Wichtig:</b> Keine Maximalsprints auf tiefem, trockenem Sand. Bei Schmerz, Krankheit, Schwindel oder ungewöhnlich schwerer Ermüdung Einheit abbrechen beziehungsweise auf Mobility und lockere Regeneration wechseln.</div>' +
-      '<div class="coach-rule"><b>Coach-Regel:</b> RPE 8–9 nur an den vorgesehenen Belastungstagen. Nach zwei schlechten Nächten oder schweren Beinen wird der Umfang um 25–40 % reduziert.</div>';
-    target.appendChild(intro);
-
-    var done = state.fuerte.done, log = state.fuerte.log;
-
-    FUERTE_PLAN.forEach(function(day){
-      var card = document.createElement("div");
-      card.className = "card fuerte-day" + (done[day.d] ? " is-done" : "");
-
-      var head = document.createElement("div");
-      head.className = "fd-head";
-      head.innerHTML = '<span class="fd-num mono">Tag ' + day.d + '</span>' +
-        '<span class="fd-title">' + day.title + '</span>' +
-        '<span class="fd-focus">' + day.focus + '</span>';
-      card.appendChild(head);
-
-      var ul = document.createElement("ul");
-      ul.className = "fd-list";
-      day.items.forEach(function(it){
-        var li = document.createElement("li");
-        li.textContent = it;
-        ul.appendChild(li);
-      });
-      card.appendChild(ul);
-
-      var links = videoLinksFor(day.items);
-      if(links.length){
-        var linkWrap = document.createElement("div");
-        linkWrap.className = "exercise-links";
-        links.forEach(function(v){
-          var a = document.createElement("a");
-          a.className = "video-link";
-          a.target = "_blank";
-          a.rel = "noopener noreferrer";
-          a.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(v.q);
-          a.textContent = "▶ " + v.label;
-          linkWrap.appendChild(a);
-        });
-        card.appendChild(linkWrap);
-      }
-
-      if(day.note){
-        var note = document.createElement("div");
-        note.className = "fd-note";
-        note.textContent = day.note;
-        card.appendChild(note);
-      }
-
-      var ctrls = document.createElement("div");
-      ctrls.className = "fd-ctrls";
-
-      var doneLabel = document.createElement("label");
-      doneLabel.className = "fd-done";
-      var cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = !!done[day.d];
-      cb.addEventListener("change", function(){
-        done[day.d] = cb.checked;
-        saveState();
-        renderFuerte();
-      });
-      doneLabel.appendChild(cb);
-      doneLabel.appendChild(document.createTextNode(" erledigt"));
-      ctrls.appendChild(doneLabel);
-
-      var entry = log[day.d] || {};
-
-      var mWrap = document.createElement("div");
-      mWrap.className = "fd-field";
-      mWrap.innerHTML = '<label>' + day.metric + '</label>';
-      var mIn = document.createElement("input");
-      mIn.type = "text";
-      mIn.placeholder = "eintragen …";
-      mIn.value = entry.metric || "";
-      mIn.addEventListener("change", function(){
-        if(!log[day.d]) log[day.d] = {};
-        log[day.d].metric = mIn.value.trim();
-        saveState();
-      });
-      mWrap.appendChild(mIn);
-      ctrls.appendChild(mWrap);
-
-      var rWrap = document.createElement("div");
-      rWrap.className = "fd-field rpe";
-      rWrap.innerHTML = '<label>RPE</label>';
-      var rIn = document.createElement("input");
-      rIn.type = "number";
-      rIn.min = "1"; rIn.max = "10"; rIn.step = "1";
-      rIn.placeholder = "1–10";
-      rIn.value = (entry.rpe !== undefined && entry.rpe !== null) ? entry.rpe : "";
-      rIn.addEventListener("change", function(){
-        if(!log[day.d]) log[day.d] = {};
-        var v = parseInt(rIn.value, 10);
-        log[day.d].rpe = isNaN(v) ? null : Math.max(1, Math.min(10, v));
-        rIn.value = log[day.d].rpe || "";
-        saveState();
-      });
-      rWrap.appendChild(rIn);
-      ctrls.appendChild(rWrap);
-
-      card.appendChild(ctrls);
-      target.appendChild(card);
-    });
-  }
-
-
-  function uid(){ return "e" + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-  function ymd(d){ return d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0"+d.getDate()).slice(-2); }
-  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-  var WD_S = ["So","Mo","Di","Mi","Do","Fr","Sa"];
-  var WD_L = ["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
-  var MON = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
-  function fmtDateShort(ds){ var d=new Date(ds+"T00:00:00"); return WD_S[d.getDay()] + " " + ("0"+d.getDate()).slice(-2) + "." + ("0"+(d.getMonth()+1)).slice(-2) + "."; }
-  function fmtDateLong(ds){ var d=new Date(ds+"T00:00:00"); return WD_L[d.getDay()] + ", " + d.getDate() + ". " + MON[d.getMonth()]; }
-  function monthKey(ds){ return ds.slice(0,7); }
-  function monthLabel(mk){ return MON[parseInt(mk.slice(5,7),10)-1] + " " + mk.slice(0,4); }
-
-  var SEED_EVENTS = [];
-
-  function ensureEvents(){
-    if(!Array.isArray(state.events)) state.events = [];
-    SEED_EVENTS.forEach(function(se){
-      if(!state.events.some(function(e){ return e.id === se.id; })){
-        state.events.push(JSON.parse(JSON.stringify(se)));
-      }
-    });
-  }
-
-  function nextGame(){
-    var t = new Date(); t.setHours(0,0,0,0);
-    var g = (state.events||[]).filter(function(e){
-      return (e.type === "spiel" || e.type === "test") && new Date(e.date+"T00:00:00") >= t;
-    }).sort(function(a,b){ return a.date < b.date ? -1 : 1; });
-    return g[0] || null;
-  }
-
-  function renderTermine(){
-    var target = id("sectionTermine");
-    target.innerHTML = "";
-    var today = new Date();
-
-    // --- Serientermin (Mannschaftstraining) ---
-    var recCard = document.createElement("div");
-    recCard.className = "card";
-    recCard.innerHTML = '<h3>Serientermin anlegen</h3><p class="muted">Für wiederkehrende Einheiten wie das Mannschaftstraining. Wochentage wählen, Zeitraum setzen, fertig.</p>';
-    var tools = document.createElement("div");
-    tools.className = "term-tools";
-
-    var wdRow = document.createElement("div");
-    wdRow.className = "wd-row";
-    var WDPICK = [{l:"Mo",v:1},{l:"Di",v:2},{l:"Mi",v:3},{l:"Do",v:4},{l:"Fr",v:5},{l:"Sa",v:6},{l:"So",v:0}];
-    var wdBoxes = [];
-    WDPICK.forEach(function(w){
-      var lab = document.createElement("label"); lab.className = "wd-chip";
-      var cb = document.createElement("input"); cb.type = "checkbox"; cb.value = w.v;
-      lab.appendChild(cb); lab.appendChild(document.createTextNode(w.l));
-      wdRow.appendChild(lab); wdBoxes.push(cb);
-    });
-
-    var grid = document.createElement("div"); grid.className = "form-grid";
-    grid.innerHTML =
-      '<div><label>Uhrzeit</label><input type="time" id="recTime" value="18:30"></div>' +
-      '<div><label>Bezeichnung</label><input type="text" id="recLabel" value="Mannschaftstraining"></div>' +
-      '<div><label>Von</label><input type="date" id="recStart"></div>' +
-      '<div><label>Bis</label><input type="date" id="recUntil"></div>';
-
-    var recBtn = document.createElement("button"); recBtn.className = "btn"; recBtn.textContent = "Serie anlegen";
-    var recStatus = document.createElement("div"); recStatus.className = "status";
-
-    tools.appendChild(wdRow); tools.appendChild(grid); tools.appendChild(recBtn); tools.appendChild(recStatus);
-    recCard.appendChild(tools); target.appendChild(recCard);
-
-    id("recStart").value = ymd(today);
-    id("recUntil").value = ymd(new Date(today.getFullYear(), 11, 31));
-
-    recBtn.addEventListener("click", function(){
-      var chosen = [];
-      wdBoxes.forEach(function(b){ if(b.checked) chosen.push(parseInt(b.value,10)); });
-      if(chosen.length === 0){ recStatus.textContent = "Bitte mindestens einen Wochentag wählen."; return; }
-      var s = new Date(id("recStart").value + "T00:00:00");
-      var u = new Date(id("recUntil").value + "T00:00:00");
-      if(isNaN(s.getTime()) || isNaN(u.getTime()) || u < s){ recStatus.textContent = "Bitte gültigen Zeitraum wählen."; return; }
-      var label = id("recLabel").value.trim() || "Mannschaftstraining";
-      var time = id("recTime").value || "";
-      var added = 0, cur = new Date(s);
-      while(cur <= u){
-        if(chosen.indexOf(cur.getDay()) >= 0){
-          state.events.push({ id: uid(), date: ymd(cur), time: time, type: "training", title: label, ha: "", note: "" });
-          added++;
-        }
-        cur.setDate(cur.getDate() + 1);
-      }
-      saveState();
-      recStatus.textContent = added + " Termine angelegt.";
-      renderTermine(); renderScoreboard();
-    });
-
-    // --- Einzeltermin ---
-    var oneCard = document.createElement("div");
-    oneCard.className = "card";
-    oneCard.innerHTML = '<h3>Einzeltermin</h3>';
-    var og = document.createElement("div"); og.className = "form-grid";
-    og.innerHTML =
-      '<div><label>Datum</label><input type="date" id="evDate"></div>' +
-      '<div><label>Uhrzeit</label><input type="time" id="evTime"></div>' +
-      '<div><label>Art</label><select id="evType"><option value="spiel">Spiel</option><option value="test">Testspiel</option><option value="training">Mannschaftstraining</option><option value="individuell">Individuell</option></select></div>' +
-      '<div><label>Heim / Auswärts</label><select id="evHa"><option value="">—</option><option value="H">Heim</option><option value="A">Auswärts</option></select></div>' +
-      '<div class="full"><label>Gegner / Titel</label><input type="text" id="evTitle" placeholder="z.B. gegen SC Musterstadt"></div>' +
-      '<div class="full"><label>Notiz (optional)</label><input type="text" id="evNote"></div>';
-    oneCard.appendChild(og);
-    var oneBtn = document.createElement("button"); oneBtn.className = "btn"; oneBtn.style.marginTop = "0.6rem"; oneBtn.textContent = "Termin hinzufügen";
-    var oneStatus = document.createElement("div"); oneStatus.className = "status";
-    oneCard.appendChild(oneBtn); oneCard.appendChild(oneStatus);
-    target.appendChild(oneCard);
-    id("evDate").value = ymd(today);
-
-    oneBtn.addEventListener("click", function(){
-      var date = id("evDate").value;
-      if(!date){ oneStatus.textContent = "Bitte Datum wählen."; return; }
-      state.events.push({
-        id: uid(), date: date, time: id("evTime").value || "",
-        type: id("evType").value, title: id("evTitle").value.trim(),
-        ha: id("evHa").value, note: id("evNote").value.trim()
-      });
-      saveState();
-      oneStatus.textContent = "Termin hinzugefügt.";
-      renderTermine(); renderScoreboard();
-    });
-
-    // --- Liste ---
-    var listCard = document.createElement("div");
-    listCard.className = "card";
-    listCard.innerHTML = '<h3>Alle Termine</h3>';
-    var evs = (state.events||[]).slice().sort(function(a,b){
-      if(a.date !== b.date) return a.date < b.date ? -1 : 1;
-      return (a.time||"") < (b.time||"") ? -1 : 1;
-    });
-    if(evs.length === 0){
-      var em = document.createElement("div"); em.className = "empty";
-      em.textContent = "Noch keine Termine. Leg oben eine Trainingsserie an oder trag Spiele ein.";
-      listCard.appendChild(em);
-    }else{
-      var curMonth = "";
-      evs.forEach(function(e){
-        var mk = monthKey(e.date);
-        if(mk !== curMonth){
-          curMonth = mk;
-          var mh = document.createElement("div"); mh.className = "month-head"; mh.textContent = monthLabel(mk);
-          listCard.appendChild(mh);
-        }
-        var row = document.createElement("div"); row.className = "ev-row";
-        var dt = document.createElement("div"); dt.className = "ev-date";
-        dt.textContent = fmtDateShort(e.date) + (e.time ? " " + e.time : "");
-        var typeLabel = e.type === "spiel" ? "Spiel" : (e.type === "test" ? "Test" : (e.type === "training" ? "Training" : "Indiv."));
-        var titleTxt = e.title || (e.type === "training" ? "Mannschaftstraining" : "Termin");
-        var subParts = [];
-        if(e.ha === "H") subParts.push("Heim"); else if(e.ha === "A") subParts.push("Auswärts");
-        if(e.note) subParts.push(e.note);
-        var body = document.createElement("div"); body.className = "ev-body";
-        body.innerHTML = '<div class="ev-title">' + esc(titleTxt) + '</div>' +
-          (subParts.length ? '<div class="ev-sub">' + esc(subParts.join(" · ")) + '</div>' : '');
-        var badge = document.createElement("span"); badge.className = "ev-badge b-" + e.type; badge.textContent = typeLabel;
-        var del = document.createElement("button"); del.className = "del"; del.setAttribute("aria-label","Termin löschen"); del.textContent = "✕";
-        del.addEventListener("click", function(){
-          state.events = state.events.filter(function(x){ return x.id !== e.id; });
-          saveState(); renderTermine(); renderScoreboard();
-        });
-        row.appendChild(dt); row.appendChild(badge); row.appendChild(body); row.appendChild(del);
-        listCard.appendChild(row);
-      });
-    }
-    target.appendChild(listCard);
-  }
-
-  var GYM_LIBRARY = [
-    {id:"split", name:"Bulgarian Split Squat", focus:"Einbeinkraft · Stabilität · Zweikampf", dose:"3 × 6–8 je Seite", rest:"90–120 s", cue:"Vorderer Fuß fest, Knie stabil, kontrolliert absenken und kräftig hoch.", q:"E3 Rehab Bulgarian split squat technique"},
-    {id:"nordic", name:"Nordic Hamstring", focus:"Hamstrings · Sprintschutz", dose:"3 × 4–6", rest:"120 s", cue:"Körper als Linie halten und die Abwärtsbewegung maximal kontrollieren.", q:"E3 Rehab Nordic hamstring curl technique"},
-    {id:"copenhagen", name:"Copenhagen Plank", focus:"Adduktoren · Richtungswechsel", dose:"3 × 20–30 s je Seite", rest:"60 s", cue:"Hüfte hochhalten, Becken nicht nach hinten drehen.", q:"E3 Rehab Copenhagen plank technique"},
-    {id:"trap", name:"Trap-Bar Deadlift", focus:"Ganzkörperkraft · Antritt", dose:"4 × 4–6", rest:"150 s", cue:"Rumpf fest, Boden wegdrücken, keine Maximalversuche im Urlaub.", q:"trap bar deadlift technique athletes"},
-    {id:"hip", name:"Hip Thrust", focus:"Gesäßkraft · Beschleunigung", dose:"3 × 6–8", rest:"90 s", cue:"Rippen unten, oben kurz Spannung halten, nicht ins Hohlkreuz.", q:"hip thrust technique athletes"},
-    {id:"calf", name:"Soleus-Wadenheben", focus:"Bremsen · Fußgelenk · Laufökonomie", dose:"3 × 10–12", rest:"60 s", cue:"Knie gebeugt halten und über den gesamten Bewegungsweg arbeiten.", q:"bent knee soleus calf raise technique"},
-    {id:"pull", name:"Klimmzug / Latzug", focus:"Oberkörper · Robustheit", dose:"3 × 6–10", rest:"90 s", cue:"Schulterblätter zuerst setzen, ohne Schwung ziehen.", q:"pull up proper form tutorial"},
-    {id:"pallof", name:"Pallof Press", focus:"Core · Zweikampf · Passstabilität", dose:"3 × 8–10 je Seite", rest:"45–60 s", cue:"Becken und Brustbein bleiben gerade, Kabel kontrolliert führen.", q:"Pallof press technique E3 Rehab"}
-  ];
-
-  function ensurePerformanceState(){
-    if(!state.performance) state.performance = {};
-    if(!state.performance.gym) state.performance.gym = {};
-    if(!state.performance.scout) state.performance.scout = {scan:3, pass:4, duel:4, speed:3, recovery:4};
-  }
-
-  function renderGym(){
-    ensurePerformanceState();
-    var target=id("sectionGym"); target.innerHTML="";
-    var intro=document.createElement("div"); intro.className="session-banner";
-    intro.innerHTML='<div class="eyebrow">Athletik für den defensiven Spielmacher</div><h3>Gym · Qualität vor Gewicht</h3><p class="muted">Die Einheiten unterstützen Antritt, Zweikampfstabilität und Verletzungsprophylaxe. Für Luca als 2009er Jungjahrgang gilt: saubere Technik, keine erzwungenen Maximalgewichte und bei Schmerzen sofort stoppen.</p>';
-    target.appendChild(intro);
-    GYM_LIBRARY.forEach(function(ex){
-      var saved=state.performance.gym[ex.id]||{};
-      var card=document.createElement("div"); card.className="exercise-card";
-      card.innerHTML='<div class="exercise-top"><div><div class="exercise-title">'+esc(ex.name)+'</div><div class="exercise-meta">'+esc(ex.focus)+' · Vorgabe: '+esc(ex.dose)+' · Pause '+esc(ex.rest)+'</div></div><a class="video-link" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/results?search_query='+encodeURIComponent(ex.q)+'">▶ Technik</a></div><p>'+esc(ex.cue)+'</p>';
-      var row=document.createElement("div"); row.className="set-row";
-      row.innerHTML='<div class="wide"><label>Notiz / Ausführung</label><input type="text" data-f="note" placeholder="z. B. sauber, leicht, schwer" value="'+esc(saved.note||'')+'"></div><div><label>Gewicht kg</label><input type="number" inputmode="decimal" data-f="weight" value="'+esc(saved.weight||'')+'"></div><div><label>RPE 1–10</label><input type="number" min="1" max="10" data-f="rpe" value="'+esc(saved.rpe||'')+'"></div>';
-      row.querySelectorAll('input').forEach(function(inp){inp.addEventListener('change',function(){if(!state.performance.gym[ex.id]) state.performance.gym[ex.id]={}; state.performance.gym[ex.id][inp.getAttribute('data-f')]=inp.value; saveState();});});
-      card.appendChild(row); target.appendChild(card);
-    });
-  }
-
-  var SCOUT_ITEMS = [
-    {id:"scan",label:"Scanning vor Ballannahme",desc:"Vororientierung, Schulterblick und offene Stellung."},
-    {id:"pass",label:"Passqualität unter Druck",desc:"Scharfe flache Pässe, richtiger Fuß und passende Entscheidung."},
-    {id:"duel",label:"Zweikampf & Absicherung",desc:"Körperposition, Timing und Raum hinter dem Ball schützen."},
-    {id:"speed",label:"Antritt & wiederholte Sprints",desc:"Erste 5–10 Meter und erneute Aktionen nach kurzer Pause."},
-    {id:"recovery",label:"Regeneration & Verfügbarkeit",desc:"Schlaf, Energie, Muskelgefühl und konstante Trainingsfähigkeit."}
-  ];
-
-  function scoutSummary(vals){
-    var total=0; SCOUT_ITEMS.forEach(function(x){total+=Number(vals[x.id]||0)});
-    var avg=total/SCOUT_ITEMS.length;
-    if(avg>=4.5) return "Sehr stabil – jetzt Qualität unter höherem Tempo bestätigen.";
-    if(avg>=3.5) return "Gute Basis – ein klarer Entwicklungsfokus pro Woche reicht.";
-    return "Grundlage aufbauen – Technik und Belastbarkeit vor maximaler Intensität.";
-  }
-
-  function renderScout(){
-    ensurePerformanceState();
-    var target=id("sectionScout"); target.innerHTML="";
-    var vals=state.performance.scout;
-    var intro=document.createElement("div"); intro.className="session-banner";
-    intro.innerHTML='<div class="eyebrow">Positionsprofil · Nummer 6</div><h3>Bundesliga-orientierter 6er-Scout</h3><p class="muted">Keine erfundene Profi-Norm, sondern Lucas persönliches Entwicklungsprofil. Nach Training oder Spiel bewertet ihr gemeinsam fünf Merkmale von 1 bis 5.</p><div class="coach-rule"><b>Coach-Auswertung:</b> '+esc(scoutSummary(vals))+'</div>';
-    target.appendChild(intro);
-    SCOUT_ITEMS.forEach(function(item){
-      var val=Math.max(1,Math.min(5,Number(vals[item.id]||3)));
-      var card=document.createElement("div"); card.className="pro-card";
-      card.innerHTML='<div class="scout-head"><div><b>'+esc(item.label)+'</b><div class="muted">'+esc(item.desc)+'</div></div><span class="mono">'+val+'/5</span></div><div class="meter"><span style="width:'+(val*20)+'%"></span></div>';
-      var select=document.createElement("select");
-      [1,2,3,4,5].forEach(function(n){var o=document.createElement("option");o.value=n;o.textContent=n+" / 5";if(n===val)o.selected=true;select.appendChild(o)});
-      select.addEventListener("change",function(){vals[item.id]=Number(select.value);saveState();renderScout();});
-      card.appendChild(select); target.appendChild(card);
-    });
-    var focus=document.createElement("div"); focus.className="card";
-    focus.innerHTML='<h3>Wochenauftrag für Luca</h3><div class="pro-grid"><div class="pro-card"><h4>Mit Ball</h4><p>Vor jeder Ballannahme mindestens einen klaren Schulterblick. Bei Passformen bewusst offen zum Spielfeld stehen.</p></div><div class="pro-card"><h4>Gegen den Ball</h4><p>Ersten Schritt nach Ballverlust sofort nach vorne oder in den Passweg – nicht stehen bleiben.</p></div><div class="pro-card"><h4>Athletik</h4><p>Kurze Antritte mit voller Qualität. Abbrechen, sobald Zeiten oder Technik deutlich schlechter werden.</p></div><div class="pro-card"><h4>Spielintelligenz</h4><p>Nach jeder Einheit eine Szene notieren: gute Entscheidung, Alternative und nächster Lernpunkt.</p></div></div>';
-    target.appendChild(focus);
-  }
-
-  function renderAll(){
-    if(!state.sohn){ state = defaultState(); }
-    normalizePlan(state.sohn);
-    ensureEvents();
-    renderScoreboard();
-    renderDashboard();
-    renderPlan();
-    renderTermine();
-    renderTracking();
-    renderGym();
-    renderScout();
-    renderErnaehrung();
-    renderFuerte();
-  }
-
-  function setupSectionNav(){
-    var buttons = id("sectionNav").querySelectorAll("button");
-    buttons.forEach(function(btn){
-      btn.addEventListener("click", function(){
-        buttons.forEach(function(b){ b.classList.remove("active"); });
-        btn.classList.add("active");
-        currentSection = btn.getAttribute("data-section");
-        id("sectionDashboard").style.display = currentSection === "dashboard" ? "" : "none";
-        id("sectionPlan").style.display = currentSection === "plan" ? "" : "none";
-        id("sectionTermine").style.display = currentSection === "termine" ? "" : "none";
-        id("sectionTracking").style.display = currentSection === "tracking" ? "" : "none";
-        id("sectionGym").style.display = currentSection === "gym" ? "" : "none";
-        id("sectionScout").style.display = currentSection === "scout" ? "" : "none";
-        id("sectionErnaehrung").style.display = currentSection === "ernaehrung" ? "" : "none";
-        id("sectionFuerte").style.display = currentSection === "fuerte" ? "" : "none";
-      });
-    });
-  }
-
-  setupSectionNav();
-
-  loadState().then(function(s){
-    state = s;
-    renderAll();
-  });
-
-})();
-</script>
-<div class="app-version">LUCA6 · Mission Bundesliga · Version 3.0</div>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./service-worker.js").catch(function () {});
-  });
-}
-</script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
