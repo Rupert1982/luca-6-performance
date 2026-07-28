@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3a82" />
+  <meta name="description" content="LUCA6 – Road to Pro: Training, Belastung, Strava und KI-Coach." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>LUCA6 – Road to Pro</title>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="brand">LUCA<span>6</span></div>
+      <div class="tagline">ROAD TO PRO</div>
+    </div>
+    <button id="installBtn" class="ghost hidden">App installieren</button>
+  </header>
+
+  <main>
+    <section class="hero card">
+      <div>
+        <p class="eyebrow">HEUTIGE MISSION</p>
+        <h1 id="missionTitle">Explosivität & erster Schritt</h1>
+        <p id="missionText">Kurze, saubere Sprints. Volle Qualität. Lange Pausen.</p>
+      </div>
+      <div id="readinessRing" class="ring"><span id="readinessValue">82</span><small>READY</small></div>
+    </section>
+
+    <nav class="tabs" aria-label="Bereiche">
+      <button class="tab active" data-view="home">Home</button>
+      <button class="tab" data-view="coach">KI-Coach</button>
+      <button class="tab" data-view="training">Training</button>
+      <button class="tab" data-view="performance">Performance</button>
+      <button class="tab" data-view="strava">Strava</button>
+    </nav>
+
+    <section id="home" class="view active">
+      <div class="grid two">
+        <article class="card metric"><span>Belastung</span><strong id="loadStatus">Grün</strong><small id="loadDetail">bereit für Qualität</small></article>
+        <article class="card metric"><span>Wochenumfang</span><strong id="weekMinutes">0 min</strong><small>alle Einheiten</small></article>
+      </div>
+
+      <article class="card">
+        <div class="section-head"><div><p class="eyebrow">CHECK-IN</p><h2>Wie fühlt Luca sich heute?</h2></div></div>
+        <form id="checkinForm" class="form-grid">
+          <label>Schlaf (Stunden)<input id="sleep" type="number" min="0" max="12" step="0.5" value="8" /></label>
+          <label>Beine müde (0–10)<input id="soreness" type="range" min="0" max="10" value="3" /><output id="sorenessOut">3</output></label>
+          <label>Motivation (0–10)<input id="motivation" type="range" min="0" max="10" value="8" /><output id="motivationOut">8</output></label>
+          <label>Schmerz (0–10)<input id="pain" type="range" min="0" max="10" value="0" /><output id="painOut">0</output></label>
+          <button class="primary" type="submit">Coach aktualisieren</button>
+        </form>
+      </article>
+
+      <article class="card">
+        <div class="section-head"><div><p class="eyebrow">NÄCHSTE EINHEIT</p><h2 id="nextSessionTitle">Acceleration Day</h2></div><span id="sessionBadge" class="badge green">EMPFOHLEN</span></div>
+        <ul id="sessionPlan" class="plan-list"></ul>
+        <button class="primary wide" data-view-jump="training">Training starten</button>
+      </article>
+    </section>
+
+    <section id="coach" class="view">
+      <article class="card coach-card">
+        <p class="eyebrow">KI-COACH 1.0</p>
+        <h2 id="coachHeadline">Heute ist ein Qualitätstag.</h2>
+        <p id="coachMessage"></p>
+        <div class="coach-actions">
+          <div><span>Fokus</span><strong id="coachFocus">Explosivität</strong></div>
+          <div><span>Intensität</span><strong id="coachIntensity">Hoch</strong></div>
+          <div><span>Dauer</span><strong id="coachDuration">45–55 min</strong></div>
+        </div>
+      </article>
+      <article class="card warning"><strong>Gesundheitshinweis:</strong> Die App ersetzt keine medizinische oder sportärztliche Beratung. Bei Schmerzen, Schwindel oder anhaltender Erschöpfung Training abbrechen und fachlich abklären.</article>
+    </section>
+
+    <section id="training" class="view">
+      <article class="card">
+        <div class="section-head"><div><p class="eyebrow">TRAININGSLOG</p><h2>Einheit eintragen</h2></div></div>
+        <form id="trainingForm" class="form-grid">
+          <label>Art<select id="trainingType"><option>Sprint</option><option>Kraft</option><option>Mannschaftstraining</option><option>Spiel</option><option>Lauf</option><option>Mobility</option><option>Regeneration</option></select></label>
+          <label>Dauer (Minuten)<input id="duration" type="number" min="1" max="300" value="60" /></label>
+          <label>Intensität (1–10)<input id="rpe" type="range" min="1" max="10" value="7" /><output id="rpeOut">7</output></label>
+          <label>Notiz<textarea id="note" rows="3" placeholder="z. B. 6 × 20 m, Zeiten, Gefühl ..."></textarea></label>
+          <button class="primary" type="submit">Einheit speichern</button>
+        </form>
+      </article>
+      <article class="card"><h2>Letzte Einheiten</h2><div id="trainingList" class="activity-list"></div></article>
+    </section>
+
+    <section id="performance" class="view">
+      <div class="grid two">
+        <article class="card score"><span>Road-to-Pro Score</span><strong id="proScore">74</strong><small>/100</small></article>
+        <article class="card score"><span>Trainingskonstanz</span><strong id="consistency">0</strong><small>Einheiten / 7 Tage</small></article>
+      </div>
+      <article class="card"><h2>6er-Profil</h2><div id="skills" class="skills"></div></article>
+    </section>
+
+    <section id="strava" class="view">
+      <article class="card strava-card">
+        <p class="eyebrow">STRAVA</p>
+        <h2>Aktivitäten automatisch übernehmen</h2>
+        <p>Die sichere Verbindung benötigt einen kleinen Serverdienst. Der geheime Strava-Schlüssel bleibt dort und wird niemals in GitHub Pages gespeichert.</p>
+        <button id="stravaConnect" class="strava-btn">Mit Strava verbinden</button>
+        <p id="stravaStatus" class="muted">Noch nicht verbunden.</p>
+      </article>
+      <article class="card"><h2>Importierte Aktivitäten</h2><div id="stravaActivities" class="activity-list"><p class="muted">Nach der Verbindung erscheinen Läufe hier automatisch.</p></div></article>
+    </section>
+  </main>
+
+  <footer>LUCA6 · Road to Pro · Daten bleiben auf diesem Gerät, bis Cloud-Sync aktiviert wird.</footer>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
