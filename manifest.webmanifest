@@ -1,12 +1,12 @@
 {
-  "name": "Luca 6 – Performance",
-  "short_name": "Luca 6",
-  "description": "Trainings- und Performance-App für Luca als defensiven Mittelfeldspieler.",
+  "name": "LUCA6 – Mission Bundesliga",
+  "short_name": "LUCA6",
+  "description": "Performance-App für Luca: Training, Gym, Tracking und Mission Bundesliga.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0B1E3D",
-  "theme_color": "#0B1E3D",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
   "orientation": "portrait-primary",
   "icons": [
     {
